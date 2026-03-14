@@ -3,7 +3,6 @@ import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import config from '../../fieldnotes.config.json';
 import '../styles/index.css';
-import indexPageScriptUrl from '../scripts/index-page.ts?url';
 import { labelTextColor } from '../lib/color';
 import { Badge, Button, Input, Link } from 'accessible-astro-components';
 
@@ -119,4 +118,6 @@ const indexHeading = config.indexHeading ?? 'RFD Index';
   </div>
 </Layout>
 
-<script type="module" src={indexPageScriptUrl}></script>
+<script>
+  import '../scripts/index-page.ts';
+</script>

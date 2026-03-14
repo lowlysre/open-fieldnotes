@@ -22,8 +22,7 @@ jobs:
           node-version-file: 'package.json'
           cache: 'npm'
 
-      - name: Install dependencies
-        uses: lowlydba/sustainable-npm@v2
+      - uses: lowlydba/sustainable-npm@v2
 
       - run: npm ci
 
