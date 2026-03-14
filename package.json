@@ -1,0 +1,18 @@
+{
+  "name": "open-fieldnotes",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "fetch": "tsx scripts/fetch-discussions.ts",
+    "dev": "npm run fetch && astro dev",
+    "build": "npm run fetch && astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "^6.0.4",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "tsx": "^4.21.0"
+  }
+}
