@@ -1,6 +1,7 @@
 ---
-// Layout.astro — base layout for all pages
-import config from '../../fieldnotes.config.mjs';
+// Layout.astro - base layout for all pages
+import config from '../../fieldnotes.config.json';
+import { DarkMode, HighContrast, Link, ReducedMotion, SkipLink } from 'accessible-astro-components';
 
 interface Props {
   title?: string;
@@ -8,7 +9,7 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
-const pageTitle = title ? `${title} — ${config.title}` : config.title;
+const pageTitle = title ? `${title} - ${config.title}` : config.title;
 const pageDescription = description ?? config.description;
 ---
 
@@ -18,6 +19,7 @@ const pageDescription = description ?? config.description;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={pageDescription} />
+    <link rel="icon" type="image/svg+xml" href="/notebook_favicon.svg" />
     <title>{pageTitle}</title>
     <style>
       :root {
@@ -34,6 +36,36 @@ const pageDescription = description ?? config.description;
           Courier, monospace;
         --max-width: 1100px;
         --radius: 4px;
+      }
+
+      :root.darkmode {
+        --color-bg: #0f172a;
+        --color-surface: #1e293b;
+        --color-border: #334155;
+        --color-text: #f1f5f9;
+        --color-text-muted: #94a3b8;
+        --color-link: #93c5fd;
+        --color-link-hover: #bfdbfe;
+      }
+
+      :root.high-contrast {
+        --color-bg: #ffffff;
+        --color-surface: #ffffff;
+        --color-border: #000000;
+        --color-text: #000000;
+        --color-text-muted: #111111;
+        --color-link: #0030cc;
+        --color-link-hover: #001d80;
+      }
+
+      :root.darkmode.high-contrast {
+        --color-bg: #000000;
+        --color-surface: #000000;
+        --color-border: #ffffff;
+        --color-text: #ffffff;
+        --color-text-muted: #f1f5f9;
+        --color-link: #7dd3fc;
+        --color-link-hover: #bae6fd;
       }
 
       *,
@@ -63,9 +95,20 @@ const pageDescription = description ?? config.description;
         text-decoration: none;
       }
 
+      a:visited {
+        color: var(--color-link);
+      }
+
       a:hover {
         color: var(--color-link-hover);
         text-decoration: underline;
+      }
+
+      :root.high-contrast a,
+      :root.high-contrast a:visited {
+        text-decoration: underline;
+        text-decoration-thickness: 2px;
+        text-underline-offset: 2px;
       }
 
       /* ── Site header ───────────────────────────────────────────────── */
@@ -94,6 +137,23 @@ const pageDescription = description ?? config.description;
       .site-header a:hover {
         color: var(--color-link);
         text-decoration: none;
+      }
+
+      .site-controls {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
+      .site-controls :global(button) {
+        color: var(--color-text-muted);
+        border-color: var(--color-border);
+      }
+
+      .site-controls :global(button:hover),
+      .site-controls :global(button:focus-visible) {
+        color: var(--color-text);
       }
 
       /* ── Main content ──────────────────────────────────────────────── */
@@ -138,18 +198,29 @@ const pageDescription = description ?? config.description;
     </style>
   </head>
   <body>
+    <SkipLink target="#main-content" />
     <header class="site-header">
       <div class="site-header-inner">
-        <a href={config.base}>{config.title}</a>
+        <Link href={config.base}>{config.title}</Link>
+        <div class="site-controls" aria-label="Accessibility controls">
+          <DarkMode label="Toggle dark mode" initialMode="auto" />
+          <HighContrast label="Toggle high contrast" />
+          <ReducedMotion label="Toggle reduced motion" initialMode="auto" />
+        </div>
       </div>
     </header>
 
-    <main class="site-main">
+    <main class="site-main" id="main-content">
       <slot />
     </main>
 
     <footer class="site-footer">
-      <p>Powered by <a href="https://github.com/lowlydba/open-fieldnotes" target="_blank" rel="noopener">OpenFieldnotes</a></p>
+      <p>
+        Powered by
+        <Link href="https://github.com/lowlydba/open-fieldnotes" isExternal>
+          OpenFieldnotes
+        </Link>
+      </p>
     </footer>
   </body>
 </html>

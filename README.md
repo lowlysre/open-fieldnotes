@@ -1,88 +1,241 @@
-# OpenFieldnotes
+# OpenFieldnotes <!-- omit in toc -->
 
-OpenFieldnotes is a GitHub template repository that turns GitHub Discussions into an RFD (Requests for Discussion) static site, inspired by [Oxide's RFD process](https://rfd.shared.oxide.computer). It fetches Discussions from your GitHub repo, converts them to markdown, and publishes a searchable, filterable site to GitHub Pages — all via GitHub Actions.
+OpenFieldnotes turns GitHub Discussions into a static RFD (Request for Discussion) site using Astro.
 
----
+It is designed for teams that already use GitHub Discussions and want:
 
-## Quick Start
+1. A lightweight RFD workflow.
+2. A searchable, state-based index.
+3. Markdown pages generated directly from Discussions.
 
-1. **Use this template** — Click "Use this template" on GitHub to create your own repo.
-2. **Edit `fieldnotes.config.mjs`** — Set your `org`, `repo`, `title`, `description`, and any state/label customisations.
-3. **Set up Discussion categories** — Create categories in your repo matching the state keys in your config (e.g. `prediscussion`, `discussion`, `published`, `committed`, `abandoned`).
-4. **Enable GitHub Pages** — In your repo settings, go to *Pages* → *Source* → select **GitHub Actions**.
-5. **Trigger the first build** — Go to *Actions* → *Build and Deploy* → *Run workflow*.
+- [Tutorial](#tutorial)
+  - [Publish your first RFD site](#publish-your-first-rfd-site)
+- [How-To Guides](#how-to-guides)
+  - [How to configure your repository](#how-to-configure-your-repository)
+  - [How to include only public discussions](#how-to-include-only-public-discussions)
+  - [How to run tests and coverage](#how-to-run-tests-and-coverage)
+  - [How to deploy to GitHub Pages](#how-to-deploy-to-github-pages)
+- [Reference](#reference)
+  - [Scripts](#scripts)
+  - [Configuration (`fieldnotes.config.json`)](#configuration-fieldnotesconfigjson)
+  - [Discussion title and slug policy](#discussion-title-and-slug-policy)
+  - [State resolution order](#state-resolution-order)
+  - [Generated content](#generated-content)
+  - [Search architecture](#search-architecture)
+- [Explanation](#explanation)
+  - [Why this project uses GitHub Discussions as source of truth](#why-this-project-uses-github-discussions-as-source-of-truth)
+  - [Why fallback slugs use `gh-<number>`](#why-fallback-slugs-use-gh-number)
+  - [Why search index is lazy-loaded](#why-search-index-is-lazy-loaded)
+  - [Intended audience](#intended-audience)
 
----
 
-## Discussion Title Convention
+## Tutorial
 
-Discussions must follow this title format for the RFD number to be parsed correctly:
+### Publish your first RFD site
 
-```
-RFD 0042: My Proposal
-```
-
-If a Discussion title doesn't match this pattern, the discussion number is used as a fallback slug and a warning is logged during the build.
-
----
-
-## State Tracking
-
-Each RFD's state is determined in this order (category takes priority):
-
-1. **Category-based**: if the Discussion's category name matches a key in `config.states`, that key is used as the state.
-2. **Label-based**: if any label on the Discussion matches a key in `config.states`, that is used.
-3. **Default**: falls back to `"discussion"` if neither matches.
-
-Configure your states in `fieldnotes.config.mjs`:
-
-```js
-states: {
-  prediscussion: { label: "Pre-Discussion", color: "#9ca3af" },
-  discussion:    { label: "Discussion",     color: "#f59e0b" },
-  published:     { label: "Published",      color: "#10b981" },
-  committed:     { label: "Committed",      color: "#3b82f6" },
-  abandoned:     { label: "Abandoned",      color: "#ef4444" },
-}
-```
-
----
-
-## Public vs Private RFDs
-
-Only Discussions tagged with the label matching `config.publicLabel` (default: `"public"`) are included in the build. Discussions without that label are silently excluded. This lets your org keep drafts and internal RFDs in the same repo without exposing them on the public site.
-
-Set `publicLabel: false` in your config to include **all** Discussions (useful for fully internal deployments).
-
----
-
-## Local Development
+1. Create a repository from this template.
+2. Edit `fieldnotes.config.json` with your org/repo/title/description.
+3. Create Discussion categories in GitHub that match your state keys.
+4. Create the `public` label (or set your own `publicLabel` value).
+5. Set a token and run local dev.
 
 ```bash
 GITHUB_TOKEN=ghp_xxx npm run dev
 ```
 
-This runs the fetch script (writing markdown files to `src/content/rfds/`) and then starts the Astro dev server.
+What this does:
 
-> **Note:** `src/content/rfds/*.md` is in `.gitignore` — these files are generated at build time and should never be committed.
+1. `npm run check` validates repo setup and warns for missing prerequisites.
+2. `npm run fetch` pulls Discussions and writes markdown files to `src/content/rfds/`.
+3. Astro serves the generated site.
 
----
+## How-To Guides
 
-## Configuration Reference (`fieldnotes.config.mjs`)
+### How to configure your repository
+
+1. Enable GitHub Discussions in repository settings.
+2. Add categories matching your configured states.
+3. Add the label configured by `publicLabel` (default: `public`).
+
+Quick check:
+
+```bash
+GITHUB_TOKEN=ghp_xxx npm run check
+```
+
+### How to include only public discussions
+
+Set `publicLabel` in `fieldnotes.config.json`:
+
+```json
+{
+  "publicLabel": "public"
+}
+```
+
+Only discussions with that label are published.
+
+To include all discussions:
+
+```json
+{
+  "publicLabel": false
+}
+```
+
+### How to run tests and coverage
+
+Run unit tests:
+
+```bash
+npm run test
+```
+
+Run Node test coverage:
+
+```bash
+node --import tsx --experimental-test-coverage --test "tests/**/*.test.ts"
+```
+
+### How to deploy to GitHub Pages
+
+1. In repository settings, open Pages.
+2. Set source to GitHub Actions.
+3. Run the build/deploy workflow.
+4. Set `base` in `fieldnotes.config.json`.
+
+Use:
+
+1. `"/"` for user or org pages.
+2. `"/repo-name/"` for project pages.
+
+## Reference
+
+### Scripts
+
+| Script | Purpose |
+| --- | --- |
+| `npm run check` | Validate Discussions enabled, expected categories, and public label |
+| `npm run fetch` | Fetch discussions and write markdown content into `src/content/rfds/` |
+| `npm run dev` | Run check + fetch, then start Astro dev server |
+| `npm run build` | Run check + fetch, then build static site |
+| `npm run preview` | Preview built site |
+| `npm run test` | Run Node test runner on `tests/**/*.test.ts` |
+
+### Fetch rate-limit controls
+
+`npm run fetch` now applies built-in API safety limits to reduce the chance of hitting GitHub GraphQL rate limits on large Discussion sets.
+
+Defaults:
+
+1. `OPEN_FIELDNOTES_MAX_GRAPHQL_REQUESTS=180`
+2. `OPEN_FIELDNOTES_MIN_RATE_REMAINING=100`
+3. `OPEN_FIELDNOTES_REQUEST_THROTTLE_MS=150`
+4. `OPEN_FIELDNOTES_RATE_LOG_EVERY=20`
+5. `OPEN_FIELDNOTES_RATE_RESET_BUFFER_SECONDS=15`
+6. `OPEN_FIELDNOTES_MAX_WAIT_FOR_RESET_SECONDS=900`
+
+Example override for very large repos:
+
+```bash
+OPEN_FIELDNOTES_MAX_GRAPHQL_REQUESTS=300 \
+OPEN_FIELDNOTES_MIN_RATE_REMAINING=150 \
+OPEN_FIELDNOTES_REQUEST_THROTTLE_MS=250 \
+GITHUB_TOKEN=ghp_xxx npm run fetch
+```
+
+### Configuration (`fieldnotes.config.json`)
+
+| Key | Type | Description |
+| --- | --- | --- |
+| `org` | `string` | GitHub org/user owning Discussions |
+| `repo` | `string` | Repository name containing Discussions |
+| `title` | `string` | Site title |
+| `description` | `string` | Site description |
+| `base` | `string` | URL base path (`/` or `/repo-name/`) |
+| `publicLabel` | `string \| false` | Required label for published discussions, or `false` for all |
+| `states` | `Record<string, { category: string; label: string; color: string }>` | RFD states used by UI and state resolution. Keys are arbitrary  define as many or as few as your workflow needs. The included defaults are suggestive, not required. |
+
+Each state object:
 
 | Key | Description |
-|-----|-------------|
-| `org` | GitHub organisation or user that owns the source repo |
-| `repo` | Repository name where Discussions live |
-| `title` | Site title shown in the header |
-| `description` | Site description shown on the index page |
-| `base` | Base URL path. Use `"/"` for a user/org site; use `"/repo-name/"` for a project site |
-| `publicLabel` | Label name that marks a Discussion as public. Set to `false` to include all. |
-| `states` | Map of state keys to `{ label, color }` objects for badge rendering |
+| --- | --- |
+| `category` | GitHub Discussion category name this state maps to |
+| `label` | Display label shown in the UI |
+| `color` | Hex color used for the state badge and filter button |
 
----
+Example (the defaults shipped with the template - replace freely):
 
-## Who is this for?
+```json
+{
+  "states": {
+    "prediscussion": { "category": "Pre-Discussion", "label": "Pre-Discussion", "color": "#9ca3af" },
+    "discussion":    { "category": "Discussion",     "label": "Discussion",     "color": "#f59e0b" },
+    "published":     { "category": "Published",      "label": "Published",      "color": "#10b981" },
+    "committed":     { "category": "Committed",      "label": "Committed",      "color": "#3b82f6" },
+    "abandoned":     { "category": "Abandoned",      "label": "Abandoned",      "color": "#ef4444" }
+  }
+}
+```
 
-OpenFieldnotes is designed for open map data and civic tech organisations that want a transparent, Git-native process for proposing and tracking technical decisions — but it works for any team that uses GitHub Discussions.
+### Discussion title and slug policy
+
+Expected title format:
+
+```text
+RFD 0042: My Proposal
+```
+
+Slug rules:
+
+1. If title matches `RFD NNNN: ...`, slug is the parsed number (`0042`).
+2. If it does not match, slug is fallback `gh-<discussionNumber>` (example: `gh-17`).
+
+Conflict rules:
+
+1. Slug conflicts are fatal and fail `npm run fetch` before file writes.
+2. Explicit RFD number conflicts are treated as fatal conflicts.
+3. Title conflicts only warn (not fatal) if slugs are unique.
+
+### State resolution order
+
+For each discussion:
+
+1. Category name match against configured state `category` values.
+2. Label name match against configured state keys.
+3. Default to the first state key that has a `category` named `Discussion`, then the first key named `discussion`, then the first state defined.
+
+### Generated content
+
+Each fetched discussion becomes `src/content/rfds/<slug>.md` with frontmatter and body content.
+
+Discussion comments are appended under a `Discussion Comments` section.
+
+Generated files are build artifacts and should not be committed.
+
+### Search architecture
+
+Index page search uses Fuse.js with lazy loading:
+
+1. Table rows render immediately from content collection.
+2. Full search corpus is fetched on demand from `/search-index.json`.
+3. Search corpus contains compact `searchText` (normalized and truncated) to keep payload bounded.
+
+## Explanation
+
+### Why this project uses GitHub Discussions as source of truth
+
+Teams already discuss proposals there. OpenFieldnotes treats those discussions as canonical and makes them browseable as a static documentation site.
+
+### Why fallback slugs use `gh-<number>`
+
+A plain numeric fallback can collide with explicit `RFD NNNN` titles. Namespacing fallback slugs avoids accidental overwrite and makes source provenance obvious.
+
+### Why search index is lazy-loaded
+
+RFD bodies and comments can be large. Loading full-text search data only when needed keeps initial page load fast while still enabling richer search.
+
+### Intended audience
+
+OpenFieldnotes is useful for open-source teams, public-sector projects, and internal engineering groups that want transparent technical decision records without adding heavyweight tooling.
 

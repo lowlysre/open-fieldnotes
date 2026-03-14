@@ -1,287 +1,121 @@
 ---
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
-import config from '../../fieldnotes.config.mjs';
+import config from '../../fieldnotes.config.json';
+import '../styles/index.css';
+import indexPageScriptUrl from '../scripts/index-page.ts?url';
+import { labelTextColor } from '../lib/color';
+import { Badge, Button, Input, Link } from 'accessible-astro-components';
 
 const allRfds = await getCollection('rfds');
 const rfds = allRfds.sort((a, b) => b.data.number.localeCompare(a.data.number));
 
-// Build a serialisable states map to pass to the client script
-const statesJson = JSON.stringify(config.states);
 const baseUrl = config.base.replace(/\/$/, '');
+const searchIndexUrl = `${baseUrl}/search-index.json`;
 ---
 
 <Layout title="Index" description={config.description}>
-  <style>
-    .page-header {
-      margin-bottom: 2rem;
-    }
+  <div class="index-page" data-search-index-url={searchIndexUrl}>
+    <div class="page-header">
+      <h1>RFD Index</h1>
+      <p>{config.description}</p>
+    </div>
 
-    .page-header h1 {
-      font-size: 1.75rem;
-      margin: 0 0 0.5rem 0;
-    }
-
-    .page-header p {
-      color: var(--color-text-muted);
-      margin: 0;
-    }
-
-    /* ── Filters ───────────────────────────────────────────────────── */
-    .filters {
-      display: flex;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-      margin-bottom: 1.25rem;
-      align-items: center;
-    }
-
-    .filter-search {
-      flex: 1;
-      min-width: 200px;
-      padding: 0.4rem 0.75rem;
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius);
-      font-size: 0.9rem;
-      background: var(--color-bg);
-      color: var(--color-text);
-    }
-
-    .filter-search:focus {
-      outline: 2px solid var(--color-link);
-      outline-offset: -1px;
-    }
-
-    .state-filters {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .state-btn {
-      padding: 0.3rem 0.75rem;
-      border-radius: 9999px;
-      border: 2px solid transparent;
-      background: var(--color-surface);
-      color: var(--color-text);
-      font-size: 0.8125rem;
-      cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
-    }
-
-    .state-btn:hover {
-      border-color: currentColor;
-    }
-
-    .state-btn.active {
-      font-weight: 600;
-      border-color: currentColor;
-    }
-
-    /* ── Table ─────────────────────────────────────────────────────── */
-    .rfd-table-wrapper {
-      overflow-x: auto;
-    }
-
-    .rfd-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-    }
-
-    .rfd-table th {
-      text-align: left;
-      padding: 0.6rem 0.75rem;
-      border-bottom: 2px solid var(--color-border);
-      font-size: 0.8125rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--color-text-muted);
-      white-space: nowrap;
-    }
-
-    .rfd-table td {
-      padding: 0.65rem 0.75rem;
-      border-bottom: 1px solid var(--color-border);
-      vertical-align: middle;
-    }
-
-    .rfd-table tr:last-child td {
-      border-bottom: none;
-    }
-
-    .rfd-table tr:hover td {
-      background: var(--color-surface);
-    }
-
-    .rfd-number {
-      font-family: var(--font-mono);
-      font-size: 0.875rem;
-      white-space: nowrap;
-    }
-
-    .rfd-title-link {
-      font-weight: 500;
-    }
-
-    /* ── State badge ───────────────────────────────────────────────── */
-    .state-badge {
-      display: inline-block;
-      padding: 0.2em 0.6em;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: #fff;
-      white-space: nowrap;
-    }
-
-    /* ── Labels ────────────────────────────────────────────────────── */
-    .label-list {
-      display: flex;
-      gap: 0.3rem;
-      flex-wrap: wrap;
-    }
-
-    .label-chip {
-      display: inline-block;
-      padding: 0.15em 0.5em;
-      border-radius: var(--radius);
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      font-size: 0.75rem;
-      color: var(--color-text-muted);
-    }
-
-    .no-results {
-      padding: 2rem;
-      text-align: center;
-      color: var(--color-text-muted);
-    }
-  </style>
-
-  <div class="page-header">
-    <h1>{config.title}</h1>
-    <p>{config.description}</p>
-  </div>
-
-  <div class="filters">
-    <input
-      type="search"
+    <div class="filters">
+    <Input
+      type="text"
       class="filter-search"
       id="search-input"
-      placeholder="Search by title…"
-      aria-label="Search by title"
+      name="search-rfds"
+      label="Search RFDs"
+      placeholder="Search title, number, labels, author, body, or comments ..."
+      data-validation=""
     />
     <div class="state-filters" id="state-filters">
-      <button class="state-btn active" data-state="all">All</button>
       {Object.entries(config.states).map(([key, val]) => (
-        <button
+        <Button
+          htmlType="button"
+          variant="outlined"
+          size="sm"
           class="state-btn"
           data-state={key}
-          style={`color: ${val.color}`}
+          aria-pressed="false"
+          style={`--state-color: ${val.color}`}
         >
           {val.label}
-        </button>
+        </Button>
       ))}
     </div>
-  </div>
+    </div>
 
-  <div class="rfd-table-wrapper">
-    <table class="rfd-table" id="rfd-table">
-      <thead>
-        <tr>
-          <th>Number</th>
-          <th>Title</th>
-          <th>State</th>
-          <th>Updated</th>
-          <th>Labels</th>
-        </tr>
-      </thead>
-      <tbody>
-        {rfds.map((rfd) => {
-          const stateConfig = config.states[rfd.data.state] ?? config.states.discussion;
-          const updatedDate = new Date(rfd.data.updatedAt).toLocaleDateString('en-US', {
-            year: 'numeric', month: 'short', day: 'numeric'
-          });
-          return (
-            <tr data-state={rfd.data.state} data-title={rfd.data.title.toLowerCase()}>
-              <td class="rfd-number">
-                <a href={`${baseUrl}/rfd/${rfd.data.number}`} class="rfd-title-link">
-                  {rfd.data.number}
-                </a>
-              </td>
-              <td>
-                <a href={`${baseUrl}/rfd/${rfd.data.number}`} class="rfd-title-link">
-                  {rfd.data.title}
-                </a>
-              </td>
-              <td>
-                <span
-                  class="state-badge"
-                  style={`background-color: ${stateConfig?.color ?? '#6b7280'}`}
-                >
-                  {stateConfig?.label ?? rfd.data.state}
-                </span>
-              </td>
-              <td style="white-space: nowrap; color: var(--color-text-muted)">
-                {updatedDate}
-              </td>
-              <td>
-                <div class="label-list">
-                  {rfd.data.labels.map((label) => (
-                    <span class="label-chip">{label}</span>
-                  ))}
-                </div>
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
-    <p class="no-results" id="no-results" style="display:none">No RFDs match your filters.</p>
+    <div class="rfd-table-wrapper">
+      <table class="rfd-table" id="rfd-table">
+        <thead>
+          <tr>
+            <th>Number</th>
+            <th>Title</th>
+            <th>State</th>
+            <th>Updated</th>
+            <th>Labels</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rfds.map((rfd) => {
+            const stateConfig = config.states[rfd.data.state] ?? config.states.discussion;
+            const updatedDate = new Date(rfd.data.updatedAt).toLocaleDateString('en-US', {
+              year: 'numeric', month: 'short', day: 'numeric'
+            });
+            return (
+              <tr
+                data-state={rfd.data.state}
+                data-title={rfd.data.title.toLowerCase()}
+                data-number={rfd.data.number.toLowerCase()}
+                data-labels={rfd.data.labels.join(' ').toLowerCase()}
+                data-author={rfd.data.author.toLowerCase()}
+              >
+                <td class="rfd-number">
+                  <Link href={`${baseUrl}/rfd/${rfd.data.number}`} class="rfd-title-link">
+                    {rfd.data.number}
+                  </Link>
+                </td>
+                <td>
+                  <Link href={`${baseUrl}/rfd/${rfd.data.number}`} class="rfd-title-link">
+                    {rfd.data.title}
+                  </Link>
+                </td>
+                <td>
+                  <Badge
+                    isPill
+                    size="sm"
+                    style={`background-color: ${stateConfig?.color ?? '#6b7280'}; border-color: transparent; color: #fff`}
+                  >
+                    {stateConfig?.label ?? rfd.data.state}
+                  </Badge>
+                </td>
+                <td class="rfd-updated">
+                  {updatedDate}
+                </td>
+                <td>
+                  <div class="label-list">
+                    {rfd.data.labels.map((label, i) => (
+                      <Link
+                        href={`https://github.com/${config.org}/${config.repo}/discussions?label%3A${encodeURIComponent(label)}`}
+                        isExternal
+                        hideIcon
+                        class="label-chip"
+                        style={rfd.data.labelColors[i] ? `background-color: #${rfd.data.labelColors[i]}; color: ${labelTextColor(rfd.data.labelColors[i])}; border-color: transparent` : ''}
+                      >{label}</Link>
+                    ))}
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      <p class="no-results" id="no-results">No RFDs match your filters 🙊</p>
+    </div>
   </div>
 </Layout>
 
-<script define:vars={{ statesJson }}>
-  const states = JSON.parse(statesJson);
-  const table = document.getElementById('rfd-table');
-  const tbody = table ? table.querySelector('tbody') : null;
-  const noResults = document.getElementById('no-results');
-  const searchInput = document.getElementById('search-input');
-  const stateButtons = document.querySelectorAll('.state-btn');
-
-  let activeState = 'all';
-  let searchTerm = '';
-
-  function applyFilters() {
-    if (!tbody) return;
-    const rows = tbody.querySelectorAll('tr');
-    let visible = 0;
-    rows.forEach((row) => {
-      const rowState = row.getAttribute('data-state') ?? '';
-      const rowTitle = row.getAttribute('data-title') ?? '';
-      const stateMatch = activeState === 'all' || rowState === activeState;
-      const searchMatch = rowTitle.includes(searchTerm);
-      const show = stateMatch && searchMatch;
-      row.style.display = show ? '' : 'none';
-      if (show) visible++;
-    });
-    if (noResults) noResults.style.display = visible === 0 ? '' : 'none';
-  }
-
-  stateButtons.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      stateButtons.forEach((b) => b.classList.remove('active'));
-      btn.classList.add('active');
-      activeState = btn.getAttribute('data-state') ?? 'all';
-      applyFilters();
-    });
-  });
-
-  if (searchInput) {
-    searchInput.addEventListener('input', (e) => {
-      searchTerm = e.target.value.toLowerCase().trim();
-      applyFilters();
-    });
-  }
-</script>
+<script type="module" src={indexPageScriptUrl}></script>

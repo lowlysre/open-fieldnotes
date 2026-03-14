@@ -3,16 +3,25 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "fetch": "tsx scripts/fetch-discussions.ts",
+    "check": "tsx scripts/check-repo.ts",
+    "fetch": "npm run check && tsx scripts/fetch-discussions.ts",
     "dev": "npm run fetch && astro dev",
     "build": "npm run fetch && astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "test": "node --import tsx --experimental-test-coverage --test \"**/*.test.ts\""
   },
   "dependencies": {
+    "accessible-astro-components": "^5.2.0",
     "astro": "^6.0.4",
+    "color2k": "^2.0.3",
+    "fuse.js": "^7.1.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "tsx": "^4.21.0"
+    "@octokit/graphql": "^9.0.3",
+    "@octokit/graphql-schema": "^15.26.1",
+    "@types/node": "^25.5.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   }
 }

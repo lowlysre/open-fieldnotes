@@ -1,0 +1,15 @@
+{
+  "org": "lowlydba",
+  "repo": "open-fieldnotes",
+  "title": "OpenFieldNotes's Field Notes",
+  "description": "Requests for Discussion for the OpenFieldNotes project.",
+  "base": "/",
+  "publicLabel": "public",
+  "states": {
+    "prediscussion": { "category": "Pre-Discussion", "label": "Pre-Discussion", "color": "#9ca3af" },
+    "discussion":    { "category": "Discussion",     "label": "Discussion",     "color": "#f59e0b" },
+    "published":     { "category": "Published",      "label": "Published",      "color": "#10b981" },
+    "committed":     { "category": "Committed",      "label": "Committed",      "color": "#3b82f6" },
+    "abandoned":     { "category": "Abandoned",      "label": "Abandoned",      "color": "#ef4444" }
+  }
+}

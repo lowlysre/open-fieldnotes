@@ -4,7 +4,7 @@ node_modules/
 # Build output
 dist/
 
-# Generated at build time — do not commit
+# Generated at build time - do not commit
 src/content/rfds/*.md
 
 # Astro cache
