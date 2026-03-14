@@ -22,8 +22,7 @@ export function createSearchEngine<T extends RfdSearchFields>(items: T[]): Fuse<
       { name: 'searchText', weight: 0.35 },
       { name: 'number', weight: 0.15 },
       { name: 'labels', weight: 0.08 },
-      { name: 'state', weight: 0.04 },
-      { name: 'author', weight: 0.03 },
+      { name: 'author', weight: 0.07 },
     ],
   });
 }
@@ -37,8 +36,7 @@ export function exactContains<T extends RfdSearchFields>(items: T[], term: strin
       (item.searchText?.includes(term) ?? false) ||
       item.number.includes(term) ||
       item.labels.includes(term) ||
-      item.author.includes(term) ||
-      item.state.includes(term)
+      item.author.includes(term)
   );
 }
 
