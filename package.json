@@ -1,0 +1,15 @@
+{
+  "name": "open-fieldnotes",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "fetch": "node scripts/fetch-discussions.mjs",
+    "dev": "npm run fetch && astro dev",
+    "build": "npm run fetch && astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "^6.0.4",
+    "zod": "^4.3.6"
+  }
+}
