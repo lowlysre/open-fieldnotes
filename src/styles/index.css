@@ -26,9 +26,9 @@
 }
 
 .index-page .state-btn {
-  color: var(--state-color, currentColor);
-  opacity: 0.75;
-  border-color: transparent;
+  color: var(--color-text);
+  opacity: 0.9;
+  border-color: color-mix(in srgb, var(--state-color, currentColor) 35%, var(--color-border));
   background: transparent;
 }
 
@@ -36,7 +36,7 @@
 .index-page .state-btn[aria-pressed='true'] {
   opacity: 1;
   border-color: var(--state-color, currentColor);
-  background: color-mix(in srgb, var(--state-color, currentColor) 18%, transparent);
+  background: color-mix(in srgb, var(--state-color, currentColor) 14%, transparent);
 }
 
 /* Results */

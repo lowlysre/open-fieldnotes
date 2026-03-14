@@ -202,7 +202,7 @@ const pageDescription = description ?? config.description;
     <header class="site-header">
       <div class="site-header-inner">
         <Link href={config.base}>{config.title}</Link>
-        <div class="site-controls" aria-label="Accessibility controls">
+        <div class="site-controls" role="group" aria-label="Accessibility controls">
           <DarkMode label="Toggle dark mode" initialMode="auto" />
           <HighContrast label="Toggle high contrast" />
           <ReducedMotion label="Toggle reduced motion" initialMode="auto" />

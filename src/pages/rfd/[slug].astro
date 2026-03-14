@@ -17,6 +17,8 @@ const { rfd } = Astro.props;
 const { Content } = await render(rfd);
 
 const stateConfig = config.states[rfd.data.state] ?? config.states.discussion;
+const stateColor = stateConfig?.color ?? '#6b7280';
+const stateTextColor = labelTextColor(stateColor.replace(/^#/, ''));
 const authorLogin = rfd.data.author.trim();
 const authorProfileUrl = `https://github.com/${authorLogin}`;
 
@@ -246,7 +248,7 @@ const minutesRead = Math.max(1, Math.ceil(wordCount / 200));
       <Badge
         isPill
         size="sm"
-        style={`background-color: ${stateConfig?.color ?? '#6b7280'}; border-color: transparent; color: #fff`}
+        style={`background-color: ${stateColor}; border-color: transparent; color: ${stateTextColor}`}
       >
         {stateConfig?.label ?? rfd.data.state}
       </Badge>

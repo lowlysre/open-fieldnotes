@@ -2,13 +2,17 @@
   "name": "open-fieldnotes",
   "type": "module",
   "version": "0.0.1",
+  "engines": {
+    "node": "24"
+  },
   "scripts": {
     "check": "tsx scripts/check-repo.ts",
     "fetch": "npm run check && tsx scripts/fetch-discussions.ts",
     "dev": "npm run fetch && astro dev",
     "build": "npm run fetch && astro build",
     "preview": "astro preview",
-    "test": "node --import tsx --experimental-test-coverage --test \"**/*.test.ts\""
+    "test": "node --import tsx --experimental-test-coverage --test \"**/*.test.ts\"",
+    "test:a11y": "playwright test"
   },
   "dependencies": {
     "accessible-astro-components": "^5.2.0",
@@ -18,8 +22,10 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.1",
     "@octokit/graphql": "^9.0.3",
     "@octokit/graphql-schema": "^15.26.1",
+    "@playwright/test": "^1.58.2",
     "@types/node": "^25.5.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"

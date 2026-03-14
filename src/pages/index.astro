@@ -52,6 +52,8 @@ const indexHeading = config.indexHeading ?? 'RFD Index';
     <ul class="rfd-results" id="rfd-results-list" aria-label="RFD results">
         {rfds.map((rfd) => {
           const stateConfig = config.states[rfd.data.state] ?? config.states.discussion;
+          const stateColor = stateConfig?.color ?? '#6b7280';
+          const stateTextColor = labelTextColor(stateColor.replace(/^#/, ''));
           const updatedDate = new Date(rfd.data.updatedAt).toLocaleDateString('en-US', {
             year: 'numeric', month: 'short', day: 'numeric'
           });
@@ -84,7 +86,7 @@ const indexHeading = config.indexHeading ?? 'RFD Index';
                 <Badge
                   isPill
                   size="sm"
-                  style={`background-color: ${stateConfig?.color ?? '#6b7280'}; border-color: transparent; color: #fff`}
+                  style={`background-color: ${stateColor}; border-color: transparent; color: ${stateTextColor}`}
                 >
                   {stateConfig?.label ?? rfd.data.state}
                 </Badge>

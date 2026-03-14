@@ -1,5 +1,8 @@
 # OpenFieldnotes <!-- omit in toc -->
 
+[![Unit & axe Tests](https://github.com/lowlydba/open-fieldnotes/actions/workflows/test.yml/badge.svg?label=Unit+%26+axe+Tests)](https://github.com/lowlydba/open-fieldnotes/actions/workflows/test.yml)
+![WCAG 2.2 AA](https://img.shields.io/badge/WCAG_2.2-AA-blue)
+
 OpenFieldnotes turns GitHub Discussions into a static RFD (Request for Discussion) site using Astro.
 
 It is designed for teams that already use GitHub Discussions and want:
@@ -13,6 +16,7 @@ It is designed for teams that already use GitHub Discussions and want:
 - [How-To Guides](#how-to-guides)
   - [How to configure your repository](#how-to-configure-your-repository)
   - [How to include only public discussions](#how-to-include-only-public-discussions)
+  - [How to run accessibility tests](#how-to-run-accessibility-tests)
   - [How to run tests and coverage](#how-to-run-tests-and-coverage)
   - [How to deploy to GitHub Pages](#how-to-deploy-to-github-pages)
 - [Reference](#reference)
@@ -83,6 +87,22 @@ To include all discussions:
 }
 ```
 
+### How to run accessibility tests
+
+Install browser binaries once:
+
+```bash
+npx playwright install chromium
+```
+
+Run accessibility checks:
+
+```bash
+npm run test:a11y
+```
+
+The suite starts `astro dev` directly, scans the index page and one RFD page with `axe-core`, and fails on `serious` or `critical` violations.
+
 ### How to run tests and coverage
 
 Run unit tests:
@@ -121,6 +141,7 @@ Use:
 | `npm run build` | Run check + fetch, then build static site |
 | `npm run preview` | Preview built site |
 | `npm run test` | Run Node test runner on `tests/**/*.test.ts` |
+| `npm run test:a11y` | Run browser accessibility checks with Playwright + axe |
 
 ### Fetch rate-limit controls
 
