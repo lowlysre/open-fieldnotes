@@ -31,11 +31,12 @@ async function expectFullWcagCompliance(page: Page, pagePath: string) {
 }
 
 test('index page passes full WCAG compliance check', async ({ page }) => {
-  await expectFullWcagCompliance(page, '/');
+  // '.' resolves relative to baseURL (which includes the base path)
+  await expectFullWcagCompliance(page, '.');
 });
 
 test('first RFD page passes full WCAG compliance check', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('.');
 
   const firstRfdLink = page.locator('.rfd-row .rfd-title-link').first();
   await expect(firstRfdLink).toBeVisible();
