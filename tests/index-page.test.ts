@@ -38,6 +38,7 @@ test('mapRowsToItems reads row dataset fields', () => {
       'data-state': 'published',
       'data-title': 'test title',
       'data-number': '0001',
+      'data-updated': '2026-01-01T00:00:00.000Z',
       'data-labels': 'public docs',
       'data-author': 'lowlydba',
     }),
@@ -48,14 +49,15 @@ test('mapRowsToItems reads row dataset fields', () => {
   assert.equal(items[0].state, 'published');
   assert.equal(items[0].title, 'test title');
   assert.equal(items[0].number, '0001');
+  assert.equal(items[0].updatedAt, '2026-01-01T00:00:00.000Z');
   assert.equal(items[0].labels, 'public docs');
   assert.equal(items[0].author, 'lowlydba');
 });
 
 test('controller applies state-only filters without loading index', async () => {
   const rows = [
-    makeRow({ 'data-state': 'discussion', 'data-title': 'db', 'data-number': '0001', 'data-labels': 'public', 'data-author': 'a' }),
-    makeRow({ 'data-state': 'published', 'data-title': 'obs', 'data-number': '0002', 'data-labels': 'public', 'data-author': 'b' }),
+    makeRow({ 'data-state': 'discussion', 'data-title': 'db', 'data-number': '0001', 'data-updated': '2026-01-01T00:00:00.000Z', 'data-labels': 'public', 'data-author': 'a' }),
+    makeRow({ 'data-state': 'published', 'data-title': 'obs', 'data-number': '0002', 'data-updated': '2026-01-02T00:00:00.000Z', 'data-labels': 'public', 'data-author': 'b' }),
   ];
   const rowItems = mapRowsToItems(rows);
   const tbody = makeTbody();
@@ -86,8 +88,8 @@ test('controller applies state-only filters without loading index', async () => 
 
 test('controller loads index for search and maps matches back to rows', async () => {
   const rows = [
-    makeRow({ 'data-state': 'discussion', 'data-title': 'db migration', 'data-number': '0001', 'data-labels': 'public', 'data-author': 'a' }),
-    makeRow({ 'data-state': 'published', 'data-title': 'observability', 'data-number': '0002', 'data-labels': 'public', 'data-author': 'b' }),
+    makeRow({ 'data-state': 'discussion', 'data-title': 'db migration', 'data-number': '0001', 'data-updated': '2026-01-01T00:00:00.000Z', 'data-labels': 'public', 'data-author': 'a' }),
+    makeRow({ 'data-state': 'published', 'data-title': 'observability', 'data-number': '0002', 'data-updated': '2026-01-02T00:00:00.000Z', 'data-labels': 'public', 'data-author': 'b' }),
   ];
   const rowItems = mapRowsToItems(rows);
   const tbody = makeTbody();
@@ -106,6 +108,7 @@ test('controller loads index for search and maps matches back to rows', async ()
       return [
         {
           number: '0001',
+          updatedAt: '2026-01-01T00:00:00.000Z',
           state: 'discussion',
           title: 'db migration strategy',
           labels: 'public',
@@ -128,7 +131,7 @@ test('controller loads index for search and maps matches back to rows', async ()
 
 test('controller falls back when index loading fails', async () => {
   const rows = [
-    makeRow({ 'data-state': 'discussion', 'data-title': 'database migration', 'data-number': '0001', 'data-labels': 'public', 'data-author': 'a' }),
+    makeRow({ 'data-state': 'discussion', 'data-title': 'database migration', 'data-number': '0001', 'data-updated': '2026-01-01T00:00:00.000Z', 'data-labels': 'public', 'data-author': 'a' }),
   ];
   const rowItems = mapRowsToItems(rows);
   const tbody = makeTbody();
@@ -158,7 +161,7 @@ test('controller falls back when index loading fails', async () => {
 
 test('controller returns early when appendRow is null', async () => {
   const rows = [
-    makeRow({ 'data-state': 'discussion', 'data-title': 'db', 'data-number': '0001', 'data-labels': 'public', 'data-author': 'a' }),
+    makeRow({ 'data-state': 'discussion', 'data-title': 'db', 'data-number': '0001', 'data-updated': '2026-01-01T00:00:00.000Z', 'data-labels': 'public', 'data-author': 'a' }),
   ];
   const rowItems = mapRowsToItems(rows);
   const controller = createIndexController({
@@ -175,7 +178,7 @@ test('controller returns early when appendRow is null', async () => {
 
 test('controller tolerates matched item without resolvable row and noResults null', async () => {
   const rows = [
-    makeRow({ 'data-state': 'discussion', 'data-title': 'db', 'data-number': '0001', 'data-labels': 'public', 'data-author': 'a' }),
+    makeRow({ 'data-state': 'discussion', 'data-title': 'db', 'data-number': '0001', 'data-updated': '2026-01-01T00:00:00.000Z', 'data-labels': 'public', 'data-author': 'a' }),
   ];
   const rowItems = mapRowsToItems(rows);
   const tbody = makeTbody();
@@ -190,6 +193,7 @@ test('controller tolerates matched item without resolvable row and noResults nul
     loadSearchIndex: async () => [
       {
         number: '9999',
+        updatedAt: '2026-01-01T00:00:00.000Z',
         state: 'discussion',
         title: 'missing row',
         labels: 'public',
@@ -206,7 +210,7 @@ test('controller tolerates matched item without resolvable row and noResults nul
 
 test('ensureSearchIndexLoaded only loads once after success', async () => {
   const rows = [
-    makeRow({ 'data-state': 'discussion', 'data-title': 'db', 'data-number': '0001', 'data-labels': 'public', 'data-author': 'a' }),
+    makeRow({ 'data-state': 'discussion', 'data-title': 'db', 'data-number': '0001', 'data-updated': '2026-01-01T00:00:00.000Z', 'data-labels': 'public', 'data-author': 'a' }),
   ];
   const rowItems = mapRowsToItems(rows);
   const tbody = makeTbody();
@@ -232,7 +236,7 @@ test('ensureSearchIndexLoaded only loads once after success', async () => {
 
 test('ensureSearchIndexLoaded returns early after prior load failure', async () => {
   const rows = [
-    makeRow({ 'data-state': 'discussion', 'data-title': 'db', 'data-number': '0001', 'data-labels': 'public', 'data-author': 'a' }),
+    makeRow({ 'data-state': 'discussion', 'data-title': 'db', 'data-number': '0001', 'data-updated': '2026-01-01T00:00:00.000Z', 'data-labels': 'public', 'data-author': 'a' }),
   ];
   const rowItems = mapRowsToItems(rows);
 
@@ -257,7 +261,7 @@ test('ensureSearchIndexLoaded returns early after prior load failure', async () 
 
 test('controller toggles noResults when zero items match', async () => {
   const rows = [
-    makeRow({ 'data-state': 'discussion', 'data-title': 'db', 'data-number': '0001', 'data-labels': 'public', 'data-author': 'a' }),
+    makeRow({ 'data-state': 'discussion', 'data-title': 'db', 'data-number': '0001', 'data-updated': '2026-01-01T00:00:00.000Z', 'data-labels': 'public', 'data-author': 'a' }),
   ];
   const rowItems = mapRowsToItems(rows);
   const tbody = makeTbody();
@@ -280,6 +284,40 @@ test('controller toggles noResults when zero items match', async () => {
     assert.equal(noResults.style.display, 'block');
 });
 
+test('controller sorts matched rows by selected sort key', async () => {
+  const rows = [
+    makeRow({ 'data-state': 'discussion', 'data-title': 'beta', 'data-number': '0002', 'data-updated': '2026-01-02T00:00:00.000Z', 'data-labels': 'public', 'data-author': 'a' }),
+    makeRow({ 'data-state': 'discussion', 'data-title': 'alpha', 'data-number': '0001', 'data-updated': '2026-01-03T00:00:00.000Z', 'data-labels': 'public', 'data-author': 'a' }),
+  ];
+  const rowItems = mapRowsToItems(rows);
+  const appended: string[] = [];
+
+  const controller = createIndexController({
+    rowItems,
+    rowByNumber: new Map(rowItems.map((item) => [item.number, item.row])),
+    appendRow: (row) => {
+      appended.push(row.getAttribute('data-number') ?? '');
+    },
+    noResults: { style: { display: 'none' } },
+    loadSearchIndex: async () => rowItems,
+  });
+
+  await controller.applyFilters();
+  assert.deepEqual(appended.slice(-2), ['0002', '0001']);
+
+  controller.setSortKey('number-asc');
+  await controller.applyFilters();
+  assert.deepEqual(appended.slice(-2), ['0001', '0002']);
+
+  controller.setSortKey('title-desc');
+  await controller.applyFilters();
+  assert.deepEqual(appended.slice(-2), ['0002', '0001']);
+
+  controller.setSortKey('updated-desc');
+  await controller.applyFilters();
+  assert.deepEqual(appended.slice(-2), ['0001', '0002']);
+});
+
 test('initIndexPage returns null when root is missing', () => {
   const fakeDoc = {
     querySelector: () => null,
@@ -291,7 +329,7 @@ test('initIndexPage returns null when root is missing', () => {
 
 test('initIndexPage wires events and drives controller', async () => {
   const rows = [
-    makeRow({ 'data-state': 'discussion', 'data-title': 'db migration', 'data-number': '0001', 'data-labels': 'public', 'data-author': 'a' }),
+    makeRow({ 'data-state': 'discussion', 'data-title': 'db migration', 'data-number': '0001', 'data-updated': '2026-01-01T00:00:00.000Z', 'data-labels': 'public', 'data-author': 'a' }),
   ];
 
   const listeners: Record<string, Function> = {};
@@ -362,6 +400,7 @@ test('initIndexPage wires events and drives controller', async () => {
     json: async () => [
       {
         number: '0001',
+        updatedAt: '2026-01-01T00:00:00.000Z',
         state: 'discussion',
         title: 'db migration',
         labels: 'public',

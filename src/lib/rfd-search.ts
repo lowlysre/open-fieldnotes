@@ -4,6 +4,7 @@ export interface RfdSearchFields {
   state: string;
   title: string;
   number: string;
+  updatedAt: string;
   labels: string;
   author: string;
   searchText?: string;
@@ -41,9 +42,8 @@ export function exactContains<T extends RfdSearchFields>(items: T[], term: strin
   );
 }
 
-// Two-stage strategy: prefer exact substring matches across all fields;
-// fall back to Fuse.js fuzzy matching only when no exact match exists.
-// State filter is applied after text matching.
+// Two-stage strategy: apply state filters first to reduce search work,
+// then prefer exact substring matches and fall back to Fuse fuzzy matching.
 export function filterSearchItems<T extends RfdSearchFields>(params: {
   items: T[];
   fuse: Fuse<T>;
@@ -55,13 +55,18 @@ export function filterSearchItems<T extends RfdSearchFields>(params: {
   const filterByState = (list: T[]): T[] =>
     activeStates.size === 0 ? list : list.filter((item) => activeStates.has(item.state));
 
-  if (!searchTerm) {
-    return filterByState(items);
+  const scopedItems = filterByState(items);
+  if (!searchTerm) return scopedItems;
+
+  const exact = exactContains(scopedItems, searchTerm);
+  if (exact.length > 0) return exact;
+
+  // Reuse the pre-built index when no state filter is active.
+  if (scopedItems.length === items.length) {
+    return fuse.search(searchTerm).map((result) => result.item);
   }
 
-  const exact = exactContains(items, searchTerm);
-  const matches = exact.length > 0
-    ? exact
-    : fuse.search(searchTerm).map((result) => result.item);
-  return filterByState(matches);
+  return createSearchEngine(scopedItems)
+    .search(searchTerm)
+    .map((result) => result.item);
 }

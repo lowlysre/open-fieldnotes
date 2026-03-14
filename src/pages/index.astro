@@ -31,20 +31,33 @@ const indexHeading = config.indexHeading ?? 'RFD Index';
       placeholder="Search title, number, labels, author, body, or comments ..."
       data-validation=""
     />
-    <div class="state-filters" id="state-filters">
-      {Object.entries(config.states).map(([key, val]) => (
-        <Button
-          htmlType="button"
-          variant="outlined"
-          size="sm"
-          class="state-btn"
-          data-state={key}
-          aria-pressed="false"
-          style={`--state-color: ${val.color}`}
-        >
-          {val.label}
-        </Button>
-      ))}
+    <div class="filter-row">
+      <div class="state-filters" id="state-filters">
+        {Object.entries(config.states).map(([key, val]) => (
+          <Button
+            htmlType="button"
+            variant="outlined"
+            size="sm"
+            class="state-btn"
+            data-state={key}
+            aria-pressed="false"
+            style={`--state-color: ${val.color}`}
+          >
+            {val.label}
+          </Button>
+        ))}
+      </div>
+      <div class="sort-control">
+        <label for="sort-select">Sort by</label>
+        <select id="sort-select" name="sort">
+          <option value="updated-desc">Last updated (newest)</option>
+          <option value="updated-asc">Last updated (oldest)</option>
+          <option value="number-desc" selected>Newest number</option>
+          <option value="number-asc">Oldest number</option>
+          <option value="title-asc">Title (A-Z)</option>
+          <option value="title-desc">Title (Z-A)</option>
+        </select>
+      </div>
     </div>
     </div>
 
@@ -63,6 +76,7 @@ const indexHeading = config.indexHeading ?? 'RFD Index';
               data-state={rfd.data.state}
               data-title={rfd.data.title.toLowerCase()}
               data-number={rfd.data.number.toLowerCase()}
+              data-updated={rfd.data.updatedAt}
               data-labels={rfd.data.labels.join(' ').toLowerCase()}
               data-author={rfd.data.author.toLowerCase()}
             >

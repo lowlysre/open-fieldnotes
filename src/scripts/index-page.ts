@@ -7,6 +7,7 @@ export interface RowLike {
 
 export interface IndexSearchItem extends RfdSearchFields {
   number: string;
+  updatedAt: string;
   row?: RowLike;
   index?: number;
 }
@@ -14,9 +15,12 @@ export interface IndexSearchItem extends RfdSearchFields {
 export interface IndexController<RowT extends RowLike> {
   toggleState(state: string): void;
   setSearchTerm(term: string): void;
+  setSortKey(sortKey: SortKey): void;
   ensureSearchIndexLoaded(): Promise<void>;
   applyFilters(): Promise<void>;
 }
+
+export type SortKey = 'number-desc' | 'number-asc' | 'title-asc' | 'title-desc' | 'updated-desc' | 'updated-asc';
 
 export interface CreateIndexControllerParams<RowT extends RowLike> {
   rowItems: Array<IndexSearchItem & { row: RowT }>;
@@ -25,6 +29,37 @@ export interface CreateIndexControllerParams<RowT extends RowLike> {
   noResults: { style: { display: string } } | null;
   loadSearchIndex: () => Promise<IndexSearchItem[]>;
   initialActiveStates?: Set<string>;
+  initialSortKey?: SortKey;
+}
+
+function sortItems<T extends IndexSearchItem>(items: T[], sortKey: SortKey): T[] {
+  const sorted = [...items];
+  const cmpNumber = (a: T, b: T) => a.number.localeCompare(b.number, undefined, { numeric: true, sensitivity: 'base' });
+  const cmpTitle = (a: T, b: T) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' });
+  const cmpUpdated = (a: T, b: T) => a.updatedAt.localeCompare(b.updatedAt);
+
+  if (sortKey === 'number-asc') {
+    sorted.sort(cmpNumber);
+    return sorted;
+  }
+  if (sortKey === 'number-desc') {
+    sorted.sort((a, b) => cmpNumber(b, a));
+    return sorted;
+  }
+  if (sortKey === 'title-desc') {
+    sorted.sort((a, b) => cmpTitle(b, a));
+    return sorted;
+  }
+  if (sortKey === 'updated-asc') {
+    sorted.sort(cmpUpdated);
+    return sorted;
+  }
+  if (sortKey === 'updated-desc') {
+    sorted.sort((a, b) => cmpUpdated(b, a));
+    return sorted;
+  }
+  sorted.sort(cmpTitle);
+  return sorted;
 }
 
 export function mapRowsToItems<RowT extends RowLike>(rows: RowT[]): Array<IndexSearchItem & { row: RowT }> {
@@ -34,6 +69,7 @@ export function mapRowsToItems<RowT extends RowLike>(rows: RowT[]): Array<IndexS
     state: row.getAttribute('data-state') ?? '',
     title: row.getAttribute('data-title') ?? '',
     number: row.getAttribute('data-number') ?? '',
+    updatedAt: row.getAttribute('data-updated') ?? '',
     labels: row.getAttribute('data-labels') ?? '',
     author: row.getAttribute('data-author') ?? '',
   }));
@@ -42,10 +78,11 @@ export function mapRowsToItems<RowT extends RowLike>(rows: RowT[]): Array<IndexS
 export function createIndexController<RowT extends RowLike>(
   params: CreateIndexControllerParams<RowT>
 ): IndexController<RowT> {
-  const { rowItems, rowByNumber, appendRow, noResults, loadSearchIndex, initialActiveStates } = params;
+  const { rowItems, rowByNumber, appendRow, noResults, loadSearchIndex, initialActiveStates, initialSortKey } = params;
 
   const derivedStates = new Set(rowItems.map((i) => i.state).filter(Boolean));
   let activeStates: Set<string> = initialActiveStates ?? derivedStates;
+  let sortKey: SortKey = initialSortKey ?? 'number-desc';
   let searchTerm = '';
   // Lazily populated the first time a search is executed or the input is focused.
   let indexedItems: IndexSearchItem[] | null = null;
@@ -82,13 +119,14 @@ export function createIndexController<RowT extends RowLike>(
       activeStates,
       searchTerm,
     });
+    const orderedItems = sortItems(matchedItems, sortKey);
 
     rowItems.forEach((item) => {
       item.row.style.display = 'none';
     });
 
     let visible = 0;
-    matchedItems.forEach((item) => {
+    orderedItems.forEach((item) => {
       const row = (item.row as RowT | undefined) ?? rowByNumber.get(item.number);
       if (!row) return;
       row.style.display = '';
@@ -113,6 +151,9 @@ export function createIndexController<RowT extends RowLike>(
     setSearchTerm(term: string) {
       searchTerm = term.toLowerCase().trim();
     },
+    setSortKey(nextSortKey: SortKey) {
+      sortKey = nextSortKey;
+    },
     ensureSearchIndexLoaded,
     applyFilters,
   };
@@ -126,6 +167,7 @@ export function initIndexPage(doc: Document = document): IndexController<HTMLEle
   const resultsList = doc.getElementById('rfd-results-list');
   const noResults = doc.getElementById('no-results');
   const searchInput = doc.getElementById('search-input') as HTMLInputElement | null;
+  const sortSelect = doc.getElementById('sort-select') as HTMLSelectElement | null;
   const stateButtons = doc.querySelectorAll('.state-btn');
   const initialActiveStates = new Set(
     Array.from(stateButtons)
@@ -175,6 +217,14 @@ export function initIndexPage(doc: Document = document): IndexController<HTMLEle
     searchInput.addEventListener('focus', () => {
       void controller.ensureSearchIndexLoaded();
     }, { once: true });
+  }
+
+  if (sortSelect) {
+    sortSelect.addEventListener('change', (e) => {
+      const target = e.target as HTMLSelectElement;
+      controller.setSortKey(target.value as SortKey);
+      void controller.applyFilters();
+    });
   }
 
   return controller;

@@ -2,6 +2,7 @@
 // client-side search engine on the index page.
 export interface SearchIndexItem {
   number: string;
+  updatedAt: string;
   state: string;
   title: string;
   labels: string;
@@ -13,6 +14,7 @@ export interface SearchIndexItem {
 interface SearchableRfd {
   data: {
     number: string;
+    updatedAt: string;
     state: string;
     title: string;
     labels: string[];
@@ -84,6 +86,7 @@ export function buildSearchText(rfd: SearchableRfd): string {
 export function toSearchIndexItem(rfd: SearchableRfd): SearchIndexItem {
   return {
     number: rfd.data.number.toLowerCase(),
+    updatedAt: rfd.data.updatedAt,
     state: rfd.data.state.toLowerCase(),
     title: rfd.data.title.toLowerCase(),
     labels: rfd.data.labels.join(' ').toLowerCase(),
