@@ -10,4 +10,17 @@ export default defineConfig({
   output: 'static',
   site,
   base,
+  vite: {
+    build: {
+      // Suppress noisy upstream Vite tree-shaking warnings from Astro internals.
+      rollupOptions: {
+        onwarn(warning, defaultHandler) {
+          if (warning.code === 'UNUSED_EXTERNAL_IMPORT' && warning.exporter?.includes('@astrojs/')) {
+            return;
+          }
+          defaultHandler(warning);
+        },
+      },
+    },
+  },
 });
