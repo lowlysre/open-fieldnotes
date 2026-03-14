@@ -18,3 +18,7 @@ src/content/rfds/*.md
 # OS files
 .DS_Store
 Thumbs.db
+
+# Playwright test artifacts
+test-results/
+playwright-report/
