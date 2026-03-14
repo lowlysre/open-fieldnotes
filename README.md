@@ -34,7 +34,7 @@ It is designed for teams that already use GitHub Discussions and want:
 ### Publish your first RFD site
 
 1. Create a repository from this template.
-2. Edit `fieldnotes.config.json` with your org/repo/title/description.
+2. Edit `fieldnotes.config.json` with your org/repo/title/indexHeading/description.
 3. Create Discussion categories in GitHub that match your state keys.
 4. Create the `public` label (or set your own `publicLabel` value).
 5. Set a token and run local dev.
@@ -151,6 +151,7 @@ GITHUB_TOKEN=ghp_xxx npm run fetch
 | `org` | `string` | GitHub org/user owning Discussions |
 | `repo` | `string` | Repository name containing Discussions |
 | `title` | `string` | Site title |
+| `indexHeading` | `string` | Main heading shown on the index page |
 | `description` | `string` | Site description |
 | `base` | `string` | URL base path (`/` or `/repo-name/`) |
 | `publicLabel` | `string \| false` | Required label for published discussions, or `false` for all |

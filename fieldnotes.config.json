@@ -2,6 +2,7 @@
   "org": "lowlydba",
   "repo": "open-fieldnotes",
   "title": "OpenFieldNotes's Field Notes",
+  "indexHeading": "RFD Index",
   "description": "Requests for Discussion for the OpenFieldNotes project.",
   "base": "/",
   "publicLabel": "public",

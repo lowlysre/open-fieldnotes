@@ -320,21 +320,14 @@ test('initIndexPage wires events and drives controller', async () => {
     },
   };
 
-  const tbody = {
+  const resultsList = {
     appended: [] as FakeRow[],
     querySelectorAll(selector: string) {
-      if (selector === 'tr') return rows;
+      if (selector === '[data-rfd-row]') return rows;
       return [];
     },
     appendChild(row: FakeRow) {
       this.appended.push(row);
-    },
-  };
-
-  const table = {
-    querySelector(selector: string) {
-      if (selector === 'tbody') return tbody;
-      return null;
     },
   };
 
@@ -352,7 +345,7 @@ test('initIndexPage wires events and drives controller', async () => {
       return null;
     },
     getElementById(id: string) {
-      if (id === 'rfd-table') return table;
+      if (id === 'rfd-results-list') return resultsList;
       if (id === 'no-results') return noResults;
       if (id === 'search-input') return searchInput;
       return null;

@@ -118,13 +118,12 @@ export function createIndexController<RowT extends RowLike>(
   };
 }
 
-export function initIndexPage(doc: Document = document): IndexController<HTMLTableRowElement> | null {
+export function initIndexPage(doc: Document = document): IndexController<HTMLElement> | null {
   const pageRoot = doc.querySelector('.index-page');
   if (!pageRoot) return null;
 
   const searchIndexUrl = pageRoot.getAttribute('data-search-index-url') ?? '/search-index.json';
-  const table = doc.getElementById('rfd-table');
-  const tbody = table ? table.querySelector('tbody') : null;
+  const resultsList = doc.getElementById('rfd-results-list');
   const noResults = doc.getElementById('no-results');
   const searchInput = doc.getElementById('search-input') as HTMLInputElement | null;
   const stateButtons = doc.querySelectorAll('.state-btn');
@@ -135,15 +134,15 @@ export function initIndexPage(doc: Document = document): IndexController<HTMLTab
       .filter(Boolean)
   );
 
-  const rows = tbody ? Array.from(tbody.querySelectorAll('tr')) : [];
+  const rows = resultsList ? Array.from(resultsList.querySelectorAll('[data-rfd-row]')) as HTMLElement[] : [];
   const rowItems = mapRowsToItems(rows);
   const rowByNumber = new Map(rowItems.map((item) => [item.number, item.row]));
 
   const controller = createIndexController({
     rowItems,
     rowByNumber,
-    appendRow: tbody ? (row) => {
-      tbody.appendChild(row);
+    appendRow: resultsList ? (row) => {
+      resultsList.appendChild(row);
     } : null,
     noResults,
     initialActiveStates,

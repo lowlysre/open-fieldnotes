@@ -12,12 +12,13 @@ const rfds = allRfds.sort((a, b) => b.data.number.localeCompare(a.data.number));
 
 const baseUrl = config.base.replace(/\/$/, '');
 const searchIndexUrl = `${baseUrl}/search-index.json`;
+const indexHeading = config.indexHeading ?? 'RFD Index';
 ---
 
 <Layout title="Index" description={config.description}>
   <div class="index-page" data-search-index-url={searchIndexUrl}>
     <div class="page-header">
-      <h1>RFD Index</h1>
+      <h1>{indexHeading}</h1>
       <p>{config.description}</p>
     </div>
 
@@ -48,73 +49,71 @@ const searchIndexUrl = `${baseUrl}/search-index.json`;
     </div>
     </div>
 
-    <div class="rfd-table-wrapper">
-      <table class="rfd-table" id="rfd-table">
-        <thead>
-          <tr>
-            <th>Number</th>
-            <th>Title</th>
-            <th>State</th>
-            <th>Updated</th>
-            <th>Labels</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rfds.map((rfd) => {
-            const stateConfig = config.states[rfd.data.state] ?? config.states.discussion;
-            const updatedDate = new Date(rfd.data.updatedAt).toLocaleDateString('en-US', {
-              year: 'numeric', month: 'short', day: 'numeric'
-            });
-            return (
-              <tr
-                data-state={rfd.data.state}
-                data-title={rfd.data.title.toLowerCase()}
-                data-number={rfd.data.number.toLowerCase()}
-                data-labels={rfd.data.labels.join(' ').toLowerCase()}
-                data-author={rfd.data.author.toLowerCase()}
-              >
-                <td class="rfd-number">
-                  <Link href={`${baseUrl}/rfd/${rfd.data.number}`} class="rfd-title-link">
-                    {rfd.data.number}
-                  </Link>
-                </td>
-                <td>
-                  <Link href={`${baseUrl}/rfd/${rfd.data.number}`} class="rfd-title-link">
-                    {rfd.data.title}
-                  </Link>
-                </td>
-                <td>
-                  <Badge
-                    isPill
-                    size="sm"
-                    style={`background-color: ${stateConfig?.color ?? '#6b7280'}; border-color: transparent; color: #fff`}
-                  >
-                    {stateConfig?.label ?? rfd.data.state}
-                  </Badge>
-                </td>
-                <td class="rfd-updated">
-                  {updatedDate}
-                </td>
-                <td>
-                  <div class="label-list">
-                    {rfd.data.labels.map((label, i) => (
-                      <Link
-                        href={`https://github.com/${config.org}/${config.repo}/discussions?label%3A${encodeURIComponent(label)}`}
-                        isExternal
-                        hideIcon
-                        class="label-chip"
-                        style={rfd.data.labelColors[i] ? `background-color: #${rfd.data.labelColors[i]}; color: ${labelTextColor(rfd.data.labelColors[i])}; border-color: transparent` : ''}
-                      >{label}</Link>
-                    ))}
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-      <p class="no-results" id="no-results">No RFDs match your filters 🙊</p>
-    </div>
+    <ul class="rfd-results" id="rfd-results-list" aria-label="RFD results">
+        {rfds.map((rfd) => {
+          const stateConfig = config.states[rfd.data.state] ?? config.states.discussion;
+          const updatedDate = new Date(rfd.data.updatedAt).toLocaleDateString('en-US', {
+            year: 'numeric', month: 'short', day: 'numeric'
+          });
+          return (
+            <li
+              class="rfd-row"
+              data-rfd-row
+              data-state={rfd.data.state}
+              data-title={rfd.data.title.toLowerCase()}
+              data-number={rfd.data.number.toLowerCase()}
+              data-labels={rfd.data.labels.join(' ').toLowerCase()}
+              data-author={rfd.data.author.toLowerCase()}
+            >
+              <div class="rfd-cell rfd-number">
+                <span class="rfd-cell-label">Number</span>
+                <Link href={`${baseUrl}/rfd/${rfd.data.number}`} class="rfd-title-link">
+                  {rfd.data.number}
+                </Link>
+              </div>
+
+              <div class="rfd-cell">
+                <span class="rfd-cell-label">Title</span>
+                <Link href={`${baseUrl}/rfd/${rfd.data.number}`} class="rfd-title-link">
+                  {rfd.data.title}
+                </Link>
+              </div>
+
+              <div class="rfd-cell">
+                <span class="rfd-cell-label">State</span>
+                <Badge
+                  isPill
+                  size="sm"
+                  style={`background-color: ${stateConfig?.color ?? '#6b7280'}; border-color: transparent; color: #fff`}
+                >
+                  {stateConfig?.label ?? rfd.data.state}
+                </Badge>
+              </div>
+
+              <div class="rfd-cell rfd-updated">
+                <span class="rfd-cell-label">Updated</span>
+                <span>{updatedDate}</span>
+              </div>
+
+              <div class="rfd-cell">
+                <span class="rfd-cell-label">Labels</span>
+                <div class="label-list">
+                  {rfd.data.labels.map((label, i) => (
+                    <Link
+                      href={`https://github.com/${config.org}/${config.repo}/discussions?label%3A${encodeURIComponent(label)}`}
+                      isExternal
+                      hideIcon
+                      class="label-chip"
+                      style={rfd.data.labelColors[i] ? `background-color: #${rfd.data.labelColors[i]}; color: ${labelTextColor(rfd.data.labelColors[i])}; border-color: transparent` : ''}
+                    >{label}</Link>
+                  ))}
+                </div>
+              </div>
+            </li>
+          );
+        })}
+    </ul>
+    <p class="no-results" id="no-results">No RFDs match your filters 🙊</p>
   </div>
 </Layout>
 
