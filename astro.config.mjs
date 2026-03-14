@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
 import fieldnotesConfig from './fieldnotes.config.json';
 
 const site = `https://${fieldnotesConfig.org}.github.io`;
@@ -10,6 +11,7 @@ export default defineConfig({
   output: 'static',
   site,
   base,
+  integrations: [sitemap()],
   compressHTML: true,
   build: {
     inlineStylesheets: 'never',
