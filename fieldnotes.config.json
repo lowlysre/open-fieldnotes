@@ -4,7 +4,7 @@
   "title": "OpenFieldNotes's Field Notes",
   "indexHeading": "RFD Index",
   "description": "Requests for Discussion for the OpenFieldNotes project.",
-  "base": "/",
+  "base": "/open-fieldnotes/",
   "publicLabel": "public",
   "states": {
     "prediscussion": { "category": "Pre-Discussion", "label": "Pre-Discussion", "color": "#9ca3af" },
