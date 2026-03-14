@@ -38,8 +38,8 @@ test('buildSearchText caps output length', () => {
   } as any;
 
   const text = buildSearchText(entry);
-  // body budget (1800) + comments budget (1200) + small metadata overhead
-  assert.ok(text.length <= 3200);
+  // body budget (1800) + comments budget (3200) + small metadata overhead
+  assert.ok(text.length <= 5200);
 });
 
 test('toSearchIndexItem lowercases fields and includes compact searchText', () => {
@@ -77,4 +77,21 @@ test('buildSearchText handles undefined body input', () => {
 
   const text = buildSearchText(entry);
   assert.ok(text.includes('no body'));
+});
+
+test('buildSearchText includes comments after HTML discussion heading', () => {
+  const longPrefix = 'intro '.repeat(500);
+  const entry = {
+    data: {
+      title: 'Comment Body',
+      number: '0014',
+      author: 'ghost',
+      state: 'discussion',
+      labels: ['public'],
+    },
+    body: `${longPrefix}\n\n<h2 id="discussion-comments">Discussion Comments</h2>\n\n> bleep`,
+  } as any;
+
+  const text = buildSearchText(entry);
+  assert.ok(text.includes('bleep'));
 });

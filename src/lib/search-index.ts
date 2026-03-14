@@ -24,10 +24,10 @@ interface SearchableRfd {
 // Caps the pre-computed full-text blob to keep the JSON payload small while
 // still covering the vast majority of RFD bodies and comments.
 const MAX_BODY_LENGTH = 1800;
-const MAX_COMMENTS_LENGTH = 1200;
+const MAX_COMMENTS_LENGTH = 3200;
 
-// Heading used by the fetch script to separate body from comment content.
-const COMMENTS_HEADING = '## Discussion Comments';
+// Heading variants used by the fetch script to separate body from comments.
+const COMMENTS_HEADING_PATTERN = /##\s+Discussion Comments|<h2[^>]*>\s*Discussion Comments\s*<\/h2>/i;
 
 // Removes code fences, inline code, images, links (keep text), HTML tags,
 // heading markers, blockquote markers, and emphasis so the search index only
@@ -56,12 +56,14 @@ function compactText(input: string, maxLength: number): string {
 
 export function buildSearchText(rfd: SearchableRfd): string {
   const body = rfd.body ?? '';
-  const commentIdx = body.indexOf(COMMENTS_HEADING);
+  const commentMatch = COMMENTS_HEADING_PATTERN.exec(body);
 
   // Split body and comments so each gets its own budget — comments always
   // appear in the index even when the main body is long.
+  const commentIdx = commentMatch?.index ?? -1;
+  const commentStart = commentMatch ? commentIdx + commentMatch[0].length : -1;
   const mainBody = commentIdx !== -1 ? body.slice(0, commentIdx) : body;
-  const commentsBody = commentIdx !== -1 ? body.slice(commentIdx + COMMENTS_HEADING.length) : '';
+  const commentsBody = commentStart !== -1 ? body.slice(commentStart) : '';
 
   const textParts = [
     rfd.data.title,
