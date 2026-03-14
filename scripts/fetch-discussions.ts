@@ -694,8 +694,8 @@ async function writeRfd(
             '',
             commentBody,
             '',
-            comment.url ? `<div><sub><a href="${comment.url}" target="_blank" rel="noopener noreferrer">View Comment ↗</a></sub></div>` : '',
-          ].filter(Boolean).join('\n'));
+            comment.url ? `<div><sub><a href="${comment.url}" target="_blank" rel="noopener noreferrer">View Comment ↗</a></sub></div>` : null,
+          ].filter((line): line is string => line !== null).join('\n'));
 
           return [
             block,
