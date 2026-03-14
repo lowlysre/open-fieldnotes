@@ -1,4 +1,4 @@
-name: Tests
+name: Unit & WCAG Tests
 
 on:
   pull_request:
