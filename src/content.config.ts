@@ -1,7 +1,8 @@
 import { defineCollection, z } from 'astro:content';
+import { glob } from 'astro/loaders';
 
 const rfds = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.md', base: './src/content/rfds' }),
   schema: z.object({
     number: z.string(),
     title: z.string(),
