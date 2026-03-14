@@ -21,10 +21,9 @@ interface SearchableRfd {
   body: string;
 }
 
-// Caps the pre-computed full-text blob to keep the JSON payload small while
-// still covering the vast majority of RFD bodies and comments.
-const MAX_BODY_LENGTH = 1800;
-const MAX_COMMENTS_LENGTH = 3200;
+// Cap the combined body+comments search text per RFD to keep payloads bounded
+// while allowing substantially longer discussions.
+const MAX_CONTENT_LENGTH = 10_000;
 
 // Heading variants used by the fetch script to separate body from comments.
 const COMMENTS_HEADING_PATTERN = /##\s+Discussion Comments|<h2[^>]*>\s*Discussion Comments\s*<\/h2>/i;
@@ -65,14 +64,18 @@ export function buildSearchText(rfd: SearchableRfd): string {
   const mainBody = commentIdx !== -1 ? body.slice(0, commentIdx) : body;
   const commentsBody = commentStart !== -1 ? body.slice(commentStart) : '';
 
+  const compactMainBody = compactText(stripMarkdownAndHtml(mainBody), MAX_CONTENT_LENGTH);
+  const remainingForComments = Math.max(0, MAX_CONTENT_LENGTH - compactMainBody.length);
+  const compactCommentsBody = compactText(stripMarkdownAndHtml(commentsBody), remainingForComments);
+
   const textParts = [
     rfd.data.title,
     rfd.data.number,
     rfd.data.author,
     rfd.data.state,
     rfd.data.labels.join(' '),
-    compactText(stripMarkdownAndHtml(mainBody), MAX_BODY_LENGTH),
-    compactText(stripMarkdownAndHtml(commentsBody), MAX_COMMENTS_LENGTH),
+    compactMainBody,
+    compactCommentsBody,
   ];
 
   return textParts.filter(Boolean).join(' ').toLowerCase();

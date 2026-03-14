@@ -10,6 +10,10 @@ export default defineConfig({
   output: 'static',
   site,
   base,
+  compressHTML: true,
+  build: {
+    inlineStylesheets: 'never',
+  },
   vite: {
     build: {
       // Suppress noisy upstream Vite tree-shaking warnings from Astro internals.

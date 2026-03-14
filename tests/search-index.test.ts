@@ -38,8 +38,8 @@ test('buildSearchText caps output length', () => {
   } as any;
 
   const text = buildSearchText(entry);
-  // body budget (1800) + comments budget (3200) + small metadata overhead
-  assert.ok(text.length <= 5200);
+  // combined content budget (10_000) + small metadata overhead
+  assert.ok(text.length <= 10100);
 });
 
 test('toSearchIndexItem lowercases fields and includes compact searchText', () => {
