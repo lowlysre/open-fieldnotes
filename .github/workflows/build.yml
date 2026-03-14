@@ -38,8 +38,7 @@ jobs:
           node-version-file: 'package.json'
           cache: 'npm'
 
-      - name: Install dependencies
-        uses: lowlydba/sustainable-npm@v2
+      - uses: lowlydba/sustainable-npm@v2
 
       - run: npm ci
 
@@ -58,7 +57,7 @@ jobs:
 
   deploy:
     needs: [test, build]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
