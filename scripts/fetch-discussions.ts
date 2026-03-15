@@ -585,12 +585,14 @@ export function escapeYamlString(value: string): string {
   return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
 }
 
-export function buildFrontmatter(fields: Record<string, string | string[]>): string {
+export function buildFrontmatter(fields: Record<string, string | number | string[]>): string {
   const lines = ['---'];
   for (const [key, value] of Object.entries(fields)) {
     if (Array.isArray(value)) {
       const items = value.map((v) => `"${String(v).replace(/"/g, '\\"')}"`).join(', ');
       lines.push(`${key}: [${items}]`);
+    } else if (typeof value === 'number') {
+      lines.push(`${key}: ${value}`);
     } else {
       lines.push(`${key}: ${escapeYamlString(value)}`);
     }
@@ -658,11 +660,13 @@ async function writeRfd(
   const labelColors = labelNodes
     .filter((l) => l.name.toLowerCase() !== publicLabelLower)
     .map((l) => (l as any).color ?? '');
+  const comments = await fetchAllDiscussionComments(discussion.number);
 
   const frontmatter = buildFrontmatter({
     number,
     title,
     state,
+    commentCount: comments.length,
     labels,
     labelColors,
     createdAt: discussion.createdAt,
@@ -672,7 +676,6 @@ async function writeRfd(
   });
 
   const body = discussion.body ?? '';
-  const comments = await fetchAllDiscussionComments(discussion.number);
 
   const commentsSection = comments.length > 0
     ? [

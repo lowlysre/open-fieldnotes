@@ -8,6 +8,7 @@ export interface RowLike {
 export interface IndexSearchItem extends RfdSearchFields {
   number: string;
   updatedAt: string;
+  commentCount: number;
   row?: RowLike;
   index?: number;
 }
@@ -20,7 +21,15 @@ export interface IndexController<RowT extends RowLike> {
   applyFilters(): Promise<void>;
 }
 
-export type SortKey = 'number-desc' | 'number-asc' | 'title-asc' | 'title-desc' | 'updated-desc' | 'updated-asc';
+export type SortKey =
+  | 'number-desc'
+  | 'number-asc'
+  | 'title-asc'
+  | 'title-desc'
+  | 'updated-desc'
+  | 'updated-asc'
+  | 'comments-desc'
+  | 'comments-asc';
 
 export interface CreateIndexControllerParams<RowT extends RowLike> {
   rowItems: Array<IndexSearchItem & { row: RowT }>;
@@ -37,6 +46,7 @@ function sortItems<T extends IndexSearchItem>(items: T[], sortKey: SortKey): T[]
   const cmpNumber = (a: T, b: T) => a.number.localeCompare(b.number, undefined, { numeric: true, sensitivity: 'base' });
   const cmpTitle = (a: T, b: T) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' });
   const cmpUpdated = (a: T, b: T) => a.updatedAt.localeCompare(b.updatedAt);
+  const cmpComments = (a: T, b: T) => a.commentCount - b.commentCount;
 
   if (sortKey === 'number-asc') {
     sorted.sort(cmpNumber);
@@ -58,6 +68,14 @@ function sortItems<T extends IndexSearchItem>(items: T[], sortKey: SortKey): T[]
     sorted.sort((a, b) => cmpUpdated(b, a));
     return sorted;
   }
+  if (sortKey === 'comments-asc') {
+    sorted.sort((a, b) => cmpComments(a, b) || cmpUpdated(b, a));
+    return sorted;
+  }
+  if (sortKey === 'comments-desc') {
+    sorted.sort((a, b) => cmpComments(b, a) || cmpUpdated(b, a));
+    return sorted;
+  }
   sorted.sort(cmpTitle);
   return sorted;
 }
@@ -70,6 +88,7 @@ export function mapRowsToItems<RowT extends RowLike>(rows: RowT[]): Array<IndexS
     title: row.getAttribute('data-title') ?? '',
     number: row.getAttribute('data-number') ?? '',
     updatedAt: row.getAttribute('data-updated') ?? '',
+    commentCount: Number.parseInt(row.getAttribute('data-comment-count') ?? '0', 10) || 0,
     labels: row.getAttribute('data-labels') ?? '',
     author: row.getAttribute('data-author') ?? '',
   }));

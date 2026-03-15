@@ -3,6 +3,7 @@
 export interface SearchIndexItem {
   number: string;
   updatedAt: string;
+  commentCount: number;
   state: string;
   title: string;
   labels: string;
@@ -15,6 +16,7 @@ interface SearchableRfd {
   data: {
     number: string;
     updatedAt: string;
+    commentCount: number;
     state: string;
     title: string;
     labels: string[];
@@ -87,6 +89,7 @@ export function toSearchIndexItem(rfd: SearchableRfd): SearchIndexItem {
   return {
     number: rfd.data.number.toLowerCase(),
     updatedAt: rfd.data.updatedAt,
+    commentCount: rfd.data.commentCount ?? 0,
     state: rfd.data.state.toLowerCase(),
     title: rfd.data.title.toLowerCase(),
     labels: rfd.data.labels.join(' ').toLowerCase(),

@@ -1,9 +1,9 @@
 {
   "org": "lowlydba",
   "repo": "open-fieldnotes",
-  "title": "OpenFieldNotes's Field Notes",
+  "title": "Demo's Field Notes",
   "indexHeading": "RFD Index",
-  "description": "Requests for Discussion for the OpenFieldNotes project.",
+  "description": "Requests for Discussion for the Demo project.",
   "base": "/open-fieldnotes/",
   "publicLabel": "public",
   "states": {

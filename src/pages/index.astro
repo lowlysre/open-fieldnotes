@@ -52,8 +52,10 @@ const indexHeading = config.indexHeading ?? 'RFD Index';
         <select id="sort-select" name="sort">
           <option value="updated-desc">Last updated (newest)</option>
           <option value="updated-asc">Last updated (oldest)</option>
-          <option value="number-desc" selected>Newest number</option>
-          <option value="number-asc">Oldest number</option>
+          <option value="comments-desc">Most comments</option>
+          <option value="comments-asc">Fewest comments</option>
+          <option value="number-desc" selected>RFD number (high to low)</option>
+          <option value="number-asc">RFD number (low to high)</option>
           <option value="title-asc">Title (A-Z)</option>
           <option value="title-desc">Title (Z-A)</option>
         </select>
@@ -77,6 +79,7 @@ const indexHeading = config.indexHeading ?? 'RFD Index';
               data-title={rfd.data.title.toLowerCase()}
               data-number={rfd.data.number.toLowerCase()}
               data-updated={rfd.data.updatedAt}
+              data-comment-count={String(rfd.data.commentCount ?? 0)}
               data-labels={rfd.data.labels.join(' ').toLowerCase()}
               data-author={rfd.data.author.toLowerCase()}
             >
@@ -108,6 +111,13 @@ const indexHeading = config.indexHeading ?? 'RFD Index';
               <div class="rfd-cell rfd-updated">
                 <span class="rfd-cell-label">Updated</span>
                 <span>{updatedDate}</span>
+              </div>
+
+              <div class="rfd-cell rfd-comments">
+                <span class="rfd-cell-label">Comments</span>
+                <span aria-label={`${rfd.data.commentCount} comments`}>
+                  {rfd.data.commentCount}
+                </span>
               </div>
 
               <div class="rfd-cell">

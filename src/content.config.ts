@@ -16,6 +16,7 @@ const rfds = defineCollection({
     }),
     labels: z.array(z.string()).default([]),
     labelColors: z.array(z.string()).default([]),
+    commentCount: z.number().int().nonnegative().default(0),
     createdAt: z.string(),
     updatedAt: z.string(),
     discussionUrl: z.string().url(),
