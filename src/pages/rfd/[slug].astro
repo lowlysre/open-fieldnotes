@@ -58,22 +58,21 @@ const minutesRead = Math.max(1, Math.ceil(wordCount / 200));
         {stateConfig?.label ?? rfd.data.state}
       </Badge>
       <span>
-        by <Link href={authorProfileUrl} isExternal hideIcon>@{authorLogin}</Link>
+        by <Link href={authorProfileUrl} isExternal>@{authorLogin}</Link>
       </span>
-      <span>
-        Created <time datetime={rfd.data.createdAt} title={createdTimestamp}>{createdDate}</time>
+      <span title={createdTimestamp}>
+        Created <time datetime={rfd.data.createdAt}>{createdDate}</time>
       </span>
-      <span>
-        Updated <time datetime={rfd.data.updatedAt} title={updatedTimestamp}>{updatedDate}</time>
+      <span title={updatedTimestamp}>
+        Updated <time datetime={rfd.data.updatedAt}>{updatedDate}</time>
       </span>
       <span>{minutesRead} min read</span>
       {rfd.data.labels.length > 0 && (
         <div class="label-list">
           {rfd.data.labels.map((label, i) => (
             <Link
-              href={`https://github.com/${config.org}/${config.repo}/discussions?label%3A${encodeURIComponent(label)}`}
+              href={`https://github.com/${config.org}/${config.repo}/discussions?discussions_q=${encodeURIComponent(`is:open label:\"${label}\"`)}`}
               isExternal
-              hideIcon
               class="label-chip"
               style={rfd.data.labelColors[i] ? `background-color: #${rfd.data.labelColors[i]}; color: ${labelTextColor(rfd.data.labelColors[i])}; border-color: transparent` : ''}
             >{label}</Link>
@@ -84,7 +83,7 @@ const minutesRead = Math.max(1, Math.ceil(wordCount / 200));
         href={rfd.data.discussionUrl}
         isExternal
       >
-        View Discussion ↗
+        View Discussion
       </Link>
     </div>
   </div>

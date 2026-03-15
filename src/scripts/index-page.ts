@@ -7,6 +7,7 @@ export interface RowLike {
 
 export interface IndexSearchItem extends RfdSearchFields {
   number: string;
+  createdAt: string;
   updatedAt: string;
   commentCount: number;
   row?: RowLike;
@@ -26,10 +27,14 @@ export type SortKey =
   | 'number-asc'
   | 'title-asc'
   | 'title-desc'
+  | 'created-desc'
+  | 'created-asc'
   | 'updated-desc'
   | 'updated-asc'
   | 'comments-desc'
-  | 'comments-asc';
+  | 'comments-asc'
+  | 'state-asc'
+  | 'state-desc';
 
 export interface CreateIndexControllerParams<RowT extends RowLike> {
   rowItems: Array<IndexSearchItem & { row: RowT }>;
@@ -44,7 +49,9 @@ export interface CreateIndexControllerParams<RowT extends RowLike> {
 function sortItems<T extends IndexSearchItem>(items: T[], sortKey: SortKey): T[] {
   const sorted = [...items];
   const cmpNumber = (a: T, b: T) => a.number.localeCompare(b.number, undefined, { numeric: true, sensitivity: 'base' });
+  const cmpState = (a: T, b: T) => a.state.localeCompare(b.state, undefined, { sensitivity: 'base' });
   const cmpTitle = (a: T, b: T) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' });
+  const cmpCreated = (a: T, b: T) => (a.createdAt ?? '').localeCompare(b.createdAt ?? '');
   const cmpUpdated = (a: T, b: T) => a.updatedAt.localeCompare(b.updatedAt);
   const cmpComments = (a: T, b: T) => a.commentCount - b.commentCount;
 
@@ -64,6 +71,14 @@ function sortItems<T extends IndexSearchItem>(items: T[], sortKey: SortKey): T[]
     sorted.sort(cmpUpdated);
     return sorted;
   }
+  if (sortKey === 'created-asc') {
+    sorted.sort(cmpCreated);
+    return sorted;
+  }
+  if (sortKey === 'created-desc') {
+    sorted.sort((a, b) => cmpCreated(b, a));
+    return sorted;
+  }
   if (sortKey === 'updated-desc') {
     sorted.sort((a, b) => cmpUpdated(b, a));
     return sorted;
@@ -74,6 +89,14 @@ function sortItems<T extends IndexSearchItem>(items: T[], sortKey: SortKey): T[]
   }
   if (sortKey === 'comments-desc') {
     sorted.sort((a, b) => cmpComments(b, a) || cmpUpdated(b, a));
+    return sorted;
+  }
+  if (sortKey === 'state-asc') {
+    sorted.sort((a, b) => cmpState(a, b) || cmpUpdated(b, a));
+    return sorted;
+  }
+  if (sortKey === 'state-desc') {
+    sorted.sort((a, b) => cmpState(b, a) || cmpUpdated(b, a));
     return sorted;
   }
   sorted.sort(cmpTitle);
@@ -87,6 +110,7 @@ export function mapRowsToItems<RowT extends RowLike>(rows: RowT[]): Array<IndexS
     state: row.getAttribute('data-state') ?? '',
     title: row.getAttribute('data-title') ?? '',
     number: row.getAttribute('data-number') ?? '',
+    createdAt: row.getAttribute('data-created') ?? '',
     updatedAt: row.getAttribute('data-updated') ?? '',
     commentCount: Number.parseInt(row.getAttribute('data-comment-count') ?? '0', 10) || 0,
     labels: row.getAttribute('data-labels') ?? '',

@@ -685,7 +685,7 @@ async function writeRfd(
           const author = comment.author?.login ?? 'unknown';
           const authorLink = author === 'unknown'
             ? '@unknown'
-            : `<a class="comment-author-link" href="https://github.com/${author}" target="_blank" rel="noopener noreferrer">@${author}</a>`;
+            : `<a class="comment-author-link" href="https://github.com/${author}" target="_blank" rel="external noopener noreferrer" title="Opens in a new tab" aria-label="@${author} profile (opens in a new tab)">@${author} ↗</a>`;
           const createdAtDisplay = formatDisplayDate(comment.createdAt ?? null);
           const createdAtFull = formatFullTimestamp(comment.createdAt ?? null);
           const createdAt = comment.createdAt
@@ -697,7 +697,9 @@ async function writeRfd(
             '',
             commentBody,
             '',
-            comment.url ? `<div><sub><a href="${comment.url}" target="_blank" rel="noopener noreferrer">View Comment ↗</a></sub></div>` : null,
+            comment.url
+              ? `<div><sub><a href="${comment.url}" target="_blank" rel="external noopener noreferrer" title="Opens in a new tab" aria-label="View comment (opens in a new tab)">View Comment ↗</a></sub></div>`
+              : null,
           ].filter((line): line is string => line !== null).join('\n'));
 
           return [

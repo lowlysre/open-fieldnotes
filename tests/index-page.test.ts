@@ -38,6 +38,7 @@ test('mapRowsToItems reads row dataset fields', () => {
       'data-state': 'published',
       'data-title': 'test title',
       'data-number': '0001',
+      'data-created': '2025-12-01T00:00:00.000Z',
       'data-updated': '2026-01-01T00:00:00.000Z',
       'data-comment-count': '3',
       'data-labels': 'public docs',
@@ -50,6 +51,7 @@ test('mapRowsToItems reads row dataset fields', () => {
   assert.equal(items[0].state, 'published');
   assert.equal(items[0].title, 'test title');
   assert.equal(items[0].number, '0001');
+  assert.equal(items[0].createdAt, '2025-12-01T00:00:00.000Z');
   assert.equal(items[0].updatedAt, '2026-01-01T00:00:00.000Z');
   assert.equal(items[0].commentCount, 3);
   assert.equal(items[0].labels, 'public docs');
@@ -110,6 +112,7 @@ test('controller loads index for search and maps matches back to rows', async ()
       return [
         {
           number: '0001',
+          createdAt: '2025-12-01T00:00:00.000Z',
           updatedAt: '2026-01-01T00:00:00.000Z',
           commentCount: 2,
           state: 'discussion',
@@ -196,6 +199,7 @@ test('controller tolerates matched item without resolvable row and noResults nul
     loadSearchIndex: async () => [
       {
         number: '9999',
+        createdAt: '2025-11-30T00:00:00.000Z',
         updatedAt: '2026-01-01T00:00:00.000Z',
         commentCount: 1,
         state: 'discussion',
@@ -290,8 +294,8 @@ test('controller toggles noResults when zero items match', async () => {
 
 test('controller sorts matched rows by selected sort key', async () => {
   const rows = [
-    makeRow({ 'data-state': 'discussion', 'data-title': 'beta', 'data-number': '0002', 'data-updated': '2026-01-02T00:00:00.000Z', 'data-comment-count': '5', 'data-labels': 'public', 'data-author': 'a' }),
-    makeRow({ 'data-state': 'discussion', 'data-title': 'alpha', 'data-number': '0001', 'data-updated': '2026-01-03T00:00:00.000Z', 'data-comment-count': '1', 'data-labels': 'public', 'data-author': 'a' }),
+    makeRow({ 'data-state': 'discussion', 'data-title': 'beta', 'data-number': '0002', 'data-created': '2026-01-03T00:00:00.000Z', 'data-updated': '2026-01-02T00:00:00.000Z', 'data-comment-count': '5', 'data-labels': 'public', 'data-author': 'a' }),
+    makeRow({ 'data-state': 'committed', 'data-title': 'alpha', 'data-number': '0001', 'data-created': '2026-01-01T00:00:00.000Z', 'data-updated': '2026-01-03T00:00:00.000Z', 'data-comment-count': '1', 'data-labels': 'public', 'data-author': 'a' }),
   ];
   const rowItems = mapRowsToItems(rows);
   const appended: string[] = [];
@@ -328,6 +332,22 @@ test('controller sorts matched rows by selected sort key', async () => {
   controller.setSortKey('comments-asc');
   await controller.applyFilters();
   assert.deepEqual(appended.slice(-2), ['0001', '0002']);
+
+  controller.setSortKey('created-desc');
+  await controller.applyFilters();
+  assert.deepEqual(appended.slice(-2), ['0002', '0001']);
+
+  controller.setSortKey('created-asc');
+  await controller.applyFilters();
+  assert.deepEqual(appended.slice(-2), ['0001', '0002']);
+
+  controller.setSortKey('state-asc');
+  await controller.applyFilters();
+  assert.deepEqual(appended.slice(-2), ['0001', '0002']);
+
+  controller.setSortKey('state-desc');
+  await controller.applyFilters();
+  assert.deepEqual(appended.slice(-2), ['0002', '0001']);
 });
 
 test('initIndexPage returns null when root is missing', () => {
@@ -412,6 +432,7 @@ test('initIndexPage wires events and drives controller', async () => {
     json: async () => [
       {
         number: '0001',
+        createdAt: '2025-12-01T00:00:00.000Z',
         updatedAt: '2026-01-01T00:00:00.000Z',
         commentCount: 1,
         state: 'discussion',

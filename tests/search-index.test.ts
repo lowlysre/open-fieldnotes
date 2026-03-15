@@ -47,6 +47,7 @@ test('toSearchIndexItem lowercases fields and includes compact searchText', () =
     data: {
       title: 'My Title',
       number: '0012',
+      createdAt: '2025-12-31T00:00:00.000Z',
       updatedAt: '2026-01-01T00:00:00.000Z',
       author: 'SomeUser',
       state: 'Published',
@@ -58,6 +59,7 @@ test('toSearchIndexItem lowercases fields and includes compact searchText', () =
   const item = toSearchIndexItem(entry);
   assert.equal(item.title, 'my title');
   assert.equal(item.number, '0012');
+  assert.equal(item.createdAt, '2025-12-31T00:00:00.000Z');
   assert.equal(item.updatedAt, '2026-01-01T00:00:00.000Z');
   assert.equal(item.author, 'someuser');
   assert.equal(item.state, 'published');
