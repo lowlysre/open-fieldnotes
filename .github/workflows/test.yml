@@ -22,7 +22,7 @@ jobs:
           node-version-file: 'package.json'
           cache: 'npm'
 
-      - uses: lowlydba/sustainable-npm@v2
+      - uses: lowlydba/sustainable-npm@v3
 
       - run: npm ci
 
