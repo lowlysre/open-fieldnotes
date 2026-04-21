@@ -17,7 +17,7 @@
   "dependencies": {
     "@astrojs/sitemap": "^3.7.1",
     "accessible-astro-components": "^5.2.0",
-    "astro": "^6.0.4",
+    "astro": "^6.1.6",
     "color2k": "^2.0.3",
     "fuse.js": "^7.1.0",
     "zod": "^4.3.6"
