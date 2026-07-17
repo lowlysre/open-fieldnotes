@@ -17,7 +17,7 @@
   "dependencies": {
     "@astrojs/sitemap": "^3.7.1",
     "accessible-astro-components": "^5.2.0",
-    "astro": "^6.0.4",
+    "astro": "^7.1.1",
     "color2k": "^2.0.3",
     "fuse.js": "^7.1.0",
     "zod": "^4.3.6"
@@ -28,7 +28,7 @@
     "@octokit/graphql-schema": "^15.26.1",
     "@playwright/test": "^1.58.2",
     "@types/node": "^25.5.0",
-    "tsx": "^4.21.0",
+    "tsx": "^4.23.1",
     "typescript": "^5.9.3"
   }
 }
