@@ -1,0 +1,6 @@
+rules:
+  unpinned-uses:
+    config:
+      policies:
+        # Require full commit SHA pins for all actions
+        "*": hash-pin
