@@ -17,18 +17,18 @@
   "dependencies": {
     "@astrojs/sitemap": "^3.7.1",
     "accessible-astro-components": "^5.2.0",
-    "astro": "^6.0.4",
+    "astro": "^7.2.1",
     "color2k": "^2.0.3",
     "fuse.js": "^7.1.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.11.1",
-    "@octokit/graphql": "^9.0.3",
+    "@axe-core/playwright": "^4.12.1",
+    "@octokit/graphql": "^9.0.4",
     "@octokit/graphql-schema": "^15.26.1",
-    "@playwright/test": "^1.58.2",
+    "@playwright/test": "^1.62.1",
     "@types/node": "^25.5.0",
-    "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "tsx": "^4.23.8",
+    "typescript": "^7.0.2"
   }
 }

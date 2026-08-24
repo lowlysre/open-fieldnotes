@@ -1,6 +1,6 @@
 # OpenFieldnotes <!-- omit in toc -->
 
-[![Unit & axe Tests](https://github.com/lowlydba/open-fieldnotes/actions/workflows/test.yml/badge.svg?label=Unit+%26+axe+Tests)](https://github.com/lowlydba/open-fieldnotes/actions/workflows/test.yml)
+[![Unit & axe Tests](https://github.com/lowlysre/open-fieldnotes/actions/workflows/test.yml/badge.svg?label=Unit+%26+axe+Tests)](https://github.com/lowlysre/open-fieldnotes/actions/workflows/test.yml)
 ![WCAG 2.2 AA](https://img.shields.io/badge/WCAG_2.2-AA-blue)
 [![sustainable-npm](https://img.shields.io/badge/sustainable--npm-🌱-blue?style=flat)](https://github.com/lowlydba/sustainable-npm)
 
