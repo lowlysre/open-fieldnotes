@@ -15,11 +15,11 @@
     "test:a11y": "playwright test"
   },
   "dependencies": {
-    "@astrojs/sitemap": "^3.7.1",
-    "accessible-astro-components": "^5.2.0",
+    "@astrojs/sitemap": "^3.7.4",
+    "accessible-astro-components": "^5.8.0",
     "astro": "^7.3.4",
-    "color2k": "^2.0.3",
-    "fuse.js": "^7.1.0",
+    "color2k": "^2.0.4",
+    "fuse.js": "^7.5.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
