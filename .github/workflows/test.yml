@@ -29,25 +29,18 @@ jobs:
       - name: Unit tests
         run: npm test
 
-      - name: Cache Playwright browsers
-        id: playwright-cache
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
-
-      - name: Install Playwright browsers and system deps (cache miss)
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium
-
-      - name: Ensure Playwright Chromium is installed (cache hit)
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install chromium
-
       - name: Fetch discussions
         run: npm run fetch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Generate pa11y-ci config
+        run: npm run a11y:config
+
+      - name: Start dev server
+        run: |
+          npx astro dev --host 127.0.0.1 --port 4321 > astro-dev.log 2>&1 &
+          npx --yes wait-on@9 --timeout 60000 http-get://127.0.0.1:4321/open-fieldnotes/ || { cat astro-dev.log; exit 1; }
+
       - name: Accessibility tests
-        run: npm run test:a11y
+        uses: lowlysre/pa11y-ci-action@9cfc00c514ae1d06afa84ce15d3959f8bbca2e73 # v1.0.0

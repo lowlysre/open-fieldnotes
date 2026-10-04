@@ -1,6 +1,6 @@
 # OpenFieldnotes <!-- omit in toc -->
 
-[![Unit & axe Tests](https://github.com/lowlysre/open-fieldnotes/actions/workflows/test.yml/badge.svg?label=Unit+%26+axe+Tests)](https://github.com/lowlysre/open-fieldnotes/actions/workflows/test.yml)
+[![Unit & WCAG Tests](https://github.com/lowlysre/open-fieldnotes/actions/workflows/test.yml/badge.svg?label=Unit+%26+WCAG+Tests)](https://github.com/lowlysre/open-fieldnotes/actions/workflows/test.yml)
 ![WCAG 2.2 AA](https://img.shields.io/badge/WCAG_2.2-AA-blue)
 [![sustainable-npm](https://img.shields.io/badge/sustainable--npm-🌱-blue?style=flat)](https://github.com/lowlydba/sustainable-npm)
 
@@ -91,19 +91,15 @@ To include all discussions:
 
 ### How to run accessibility tests
 
-Install browser binaries once:
+Generate the pa11y-ci config (index page plus every fetched RFD), start the dev server, then run [pa11y-ci](https://github.com/pa11y/pa11y-ci):
 
 ```bash
-npx playwright install chromium
+npm run a11y:config
+npx astro dev --host 127.0.0.1 --port 4321 &
+npx pa11y-ci
 ```
 
-Run accessibility checks:
-
-```bash
-npm run test:a11y
-```
-
-The suite starts `astro dev` directly, scans the index page and one RFD page with `axe-core`, and fails on `serious` or `critical` violations.
+CI runs the same checks with [lowlysre/pa11y-ci-action](https://github.com/lowlysre/pa11y-ci-action) against the WCAG2AA standard.
 
 ### How to run tests and coverage
 
@@ -143,7 +139,7 @@ Use:
 | `npm run build` | Run check + fetch, then build static site |
 | `npm run preview` | Preview built site |
 | `npm run test` | Run Node test runner on `tests/**/*.test.ts` |
-| `npm run test:a11y` | Run browser accessibility checks with Playwright + axe |
+| `npm run a11y:config` | Generate `.pa11yci.json` for the accessibility scan |
 
 ### Fetch rate-limit controls
 
