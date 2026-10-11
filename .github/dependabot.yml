@@ -18,13 +18,7 @@ updates:
         patterns:
           - "astro"
           - "@astrojs/*"
-      dev-dependencies:
-        dependency-type: "development"
-        update-types:
-          - "minor"
-          - "patch"
-      prod-minor-patch:
-        dependency-type: "production"
+      minor-patch:
         update-types:
           - "minor"
           - "patch"
