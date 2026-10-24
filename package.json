@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
-    "accessible-astro-components": "^5.8.0",
+    "accessible-astro-components": "^5.8.1",
     "astro": "^7.3.8",
     "color2k": "^2.0.4",
     "fuse.js": "^7.5.0",
