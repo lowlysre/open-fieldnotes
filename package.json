@@ -15,7 +15,7 @@
     "a11y:config": "tsx scripts/a11y-config.ts"
   },
   "dependencies": {
-    "@astrojs/sitemap": "^3.7.4",
+    "@astrojs/sitemap": "^3.7.6",
     "accessible-astro-components": "^5.8.1",
     "astro": "^7.4.12",
     "color2k": "^2.0.4",
